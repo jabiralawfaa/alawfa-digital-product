@@ -1,0 +1,54 @@
+const API_BASE = '/data/products';
+
+async function loadProducts() {
+  const grid = document.getElementById('productGrid');
+
+  try {
+    const files = [
+      'ebook-resep-keluarga.json',
+      'template-cv-modern.json',
+    ];
+
+    const products = [];
+
+    for (const file of files) {
+      const res = await fetch(`${API_BASE}/${file}`);
+      if (res.ok) {
+        const product = await res.json();
+        products.push(product);
+      }
+    }
+
+    if (products.length === 0) {
+      grid.innerHTML = '<p class="loading-text">Belum ada produk.</p>';
+      return;
+    }
+
+    grid.innerHTML = products.map(product => `
+      <article class="product-card" data-id="${product.id}">
+        <img
+          class="product-card-image"
+          src="${product.previewImage || '/placeholder.svg'}"
+          alt="${product.title}"
+          loading="lazy"
+        />
+        <div class="product-card-body">
+          <span class="product-card-category">${product.category}</span>
+          <h2 class="product-card-title">${product.title}</h2>
+          ${product.price ? `<p class="product-card-price">${product.price}</p>` : ''}
+        </div>
+      </article>
+    `).join('');
+
+    grid.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('click', () => {
+        window.location.href = `/detail.html?id=${card.dataset.id}`;
+      });
+    });
+
+  } catch (err) {
+    grid.innerHTML = '<p class="loading-text">Gagal memuat produk. Coba lagi nanti.</p>';
+  }
+}
+
+loadProducts();

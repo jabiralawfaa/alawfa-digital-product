@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Detail Produk — Al-Awfa Digital Product</title>
+  <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/detail.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <a href="/" class="logo"><img src="/logo.png" alt="Al-Awfa Digital Product" /></a>
+      <nav class="nav-links">
+        <a href="/">Beranda</a>
+        <a href="/kategori/">Kategori</a>
+        <a href="/tentang/">Tentang</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <article class="product-detail container" id="productDetail">
+      <p class="loading-text">Memuat detail produk...</p>
+    </article>
+  </main>
+
+  <a class="btn-cta-fixed" id="btnCta" href="#" target="_blank" rel="noopener">Kunjungi</a>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <p>&copy; 2026 Al-Awfa Digital Product. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/scripts/theme.js"></script>
+  <script type="module" src="/scripts/detail.js"></script>
+</body>
+</html>
