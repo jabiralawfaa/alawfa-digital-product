@@ -67,7 +67,16 @@
   object-fit: cover;
 }
 
-.btn-cta-fixed {
+.cta-wrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  padding: 0 16px 12px;
+}
+
+.btn-cta {
   display: block;
   width: 100%;
   padding: 1rem;
@@ -76,25 +85,26 @@
   font-size: 1.125rem;
   font-weight: 700;
   text-align: center;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 50;
+  border-radius: var(--radius);
   transition: background var(--transition), color var(--transition);
 }
 
-.btn-cta-fixed:hover {
+.btn-cta:hover {
   background: var(--coral);
   color: var(--white) !important;
 }
 
 @media (min-width: 768px) {
-  .btn-cta-fixed {
+  .cta-wrapper {
     position: static;
+    display: flex;
+    justify-content: center;
+    padding: 0 0 2rem;
+  }
+
+  .btn-cta {
     width: auto;
-    display: inline-block;
     padding: 0.875rem 2.5rem;
-    border-radius: var(--radius);
-    margin-bottom: 2rem;
+    display: inline-block;
   }
 }

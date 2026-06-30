@@ -4,68 +4,267 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Admin — Al-Awfa Digital Product</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/admin.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hugerte@1/skins/ui/oxide/skin.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js"></script>
 </head>
 <body class="admin-body">
   <div class="admin-layout">
     <aside class="sidebar">
       <div class="sidebar-header">
-        <h2>Admin Panel</h2>
+        <img src="/logo.png" alt="Al-Awfa" class="sidebar-logo" />
         <button class="theme-toggle sidebar-theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
           <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
           <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
       </div>
       <nav class="sidebar-nav">
-        <a href="/admin/" class="active" data-page="overview">Overview</a>
-        <a href="/admin/?page=produk" data-page="produk">Produk</a>
-        <a href="/admin/?page=tambah" data-page="tambah">Tambah Produk</a>
-        <a href="/admin/?page=logout" data-page="logout">Logout</a>
+        <a href="#" class="active" data-section="overview">Overview</a>
+        <a href="#" data-section="products">Produk</a>
+        <a href="#" data-section="landing">Landing Page</a>
+        <a href="#" data-section="logout" class="logout-link">Logout</a>
       </nav>
     </aside>
 
     <main class="dashboard-content" id="dashboardContent">
-      <section class="stats-overview" id="statsOverview">
-        <div class="stat-card">
-          <h3>Total Produk</h3>
-          <p class="stat-number" id="statTotalProducts">0</p>
+
+      <!-- OVERVIEW -->
+      <section class="admin-section active" id="section-overview">
+        <div class="section-header">
+          <h1>Overview</h1>
+          <p>Ringkasan statistik toko kamu</p>
         </div>
-        <div class="stat-card">
-          <h3>Total Views</h3>
-          <p class="stat-number" id="statTotalViews">0</p>
+        <div class="stats-overview">
+          <div class="stat-card">
+            <h3>Total Produk</h3>
+            <p class="stat-number" id="statTotalProducts">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Views</h3>
+            <p class="stat-number" id="statTotalViews" data-type="views">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Clicks</h3>
+            <p class="stat-number" id="statTotalClicks" data-type="clicks">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Rata-rata CTR</h3>
+            <p class="stat-number" id="statAvgCtr">0%</p>
+          </div>
         </div>
-        <div class="stat-card">
-          <h3>Total Clicks</h3>
-          <p class="stat-number" id="statTotalClicks">0</p>
-        </div>
-        <div class="stat-card">
-          <h3>Rata-rata CTR</h3>
-          <p class="stat-number" id="statAvgCtr">0%</p>
+        <div class="card">
+          <div class="card-header">
+            <h2>Produk Terbaru</h2>
+          </div>
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Judul</th>
+                    <th>Kategori</th>
+                    <th>Views</th>
+                    <th>Clicks</th>
+                    <th>CTR</th>
+                  </tr>
+                </thead>
+                <tbody id="overviewTableBody">
+                  <tr><td colspan="6">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="product-table-section" id="productTableSection">
-        <h2>Daftar Produk</h2>
-        <div class="table-wrapper">
-          <table class="product-table">
-            <thead>
-              <tr>
-                <th>Foto</th>
-                <th>Judul</th>
-                <th>Views</th>
-                <th>Clicks</th>
-                <th>CTR</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody id="productTableBody">
-              <tr><td colspan="6">Memuat data...</td></tr>
-            </tbody>
-          </table>
+      <!-- PRODUCTS -->
+      <section class="admin-section" id="section-products">
+        <div class="section-header">
+          <h1>Produk</h1>
+          <p>Kelola semua produk digital kamu</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchProduct" placeholder="Cari produk..." />
+          </div>
+          <button class="btn-primary btn-sm" id="btnAddProduct">+ Tambah Produk</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Judul</th>
+                    <th>Kategori</th>
+                    <th>Views</th>
+                    <th>Clicks</th>
+                    <th>CTR</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="productTableBody">
+                  <tr><td colspan="7">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </section>
+
+      <!-- LANDING PAGE EDITOR -->
+      <section class="admin-section" id="section-landing">
+        <div class="section-header">
+          <h1>Landing Page</h1>
+          <p>Edit konten halaman utama toko kamu</p>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Hero</h2></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Judul</label>
+              <input type="text" id="landingHeroTitle" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Subjudul</label>
+              <input type="text" id="landingHeroSubtitle" class="form-control" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Tentang</h2></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Judul Section</label>
+              <input type="text" id="landingAboutHeading" class="form-control" />
+            </div>
+            <div id="aboutCardsEditor">
+              <div class="about-card-editor" data-index="0">
+                <h4>Kartu 1</h4>
+                <div class="form-group">
+                  <label>Judul</label>
+                  <input type="text" class="form-control about-card-title" />
+                </div>
+                <div class="form-group">
+                  <label>Deskripsi</label>
+                  <textarea class="form-control about-card-desc" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="about-card-editor" data-index="1">
+                <h4>Kartu 2</h4>
+                <div class="form-group">
+                  <label>Judul</label>
+                  <input type="text" class="form-control about-card-title" />
+                </div>
+                <div class="form-group">
+                  <label>Deskripsi</label>
+                  <textarea class="form-control about-card-desc" rows="3"></textarea>
+                </div>
+              </div>
+              <div class="about-card-editor" data-index="2">
+                <h4>Kartu 3</h4>
+                <div class="form-group">
+                  <label>Judul</label>
+                  <input type="text" class="form-control about-card-title" />
+                </div>
+                <div class="form-group">
+                  <label>Deskripsi</label>
+                  <textarea class="form-control about-card-desc" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Kontak & Footer</h2></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="landingContactEmail" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Link Lynk.id</label>
+              <input type="url" id="landingContactLynk" class="form-control" />
+            </div>
+            <div class="form-group">
+              <label>Copyright Footer</label>
+              <input type="text" id="landingFooterCopyright" class="form-control" />
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><h2>Konten Kustom (HTML)</h2></div>
+          <div class="card-body">
+            <div class="form-group">
+              <label>Deskripsi Hero (opsional)</label>
+              <textarea id="landingHeroEditor" class="form-control" rows="8"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-primary" id="btnSaveLanding">Simpan Perubahan</button>
+          <span class="save-status" id="landingSaveStatus"></span>
+        </div>
+      </section>
+
     </main>
+  </div>
+
+  <!-- PRODUCT MODAL -->
+  <div class="modal-overlay" id="productModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modalTitle">Tambah Produk</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="productForm">
+          <input type="hidden" id="productId" />
+          <div class="form-group">
+            <label>Judul Produk</label>
+            <input type="text" id="formTitle" class="form-control" required />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Kategori</label>
+              <input type="text" id="formCategory" class="form-control" placeholder="Ebook, Template, dll" />
+            </div>
+            <div class="form-group">
+              <label>Harga</label>
+              <input type="text" id="formPrice" class="form-control" placeholder="Rp 49.000" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Link Lynk.id</label>
+            <input type="url" id="formLynkUrl" class="form-control" placeholder="https://lynk.id/..." required />
+          </div>
+          <div class="form-group">
+            <label>URL Foto Preview</label>
+            <input type="url" id="formPreviewImage" class="form-control" placeholder="/placeholder.svg" />
+          </div>
+          <div class="form-group">
+            <label>Deskripsi</label>
+            <textarea id="formDescription" class="form-control" rows="6"></textarea>
+          </div>
+          <div class="form-group">
+            <label>URL Galeri (pisahkan dengan koma)</label>
+            <input type="text" id="formGallery" class="form-control" placeholder="/media/produk/img1.jpg, /media/produk/video.mp4" />
+          </div>
+          <button type="submit" class="btn-primary btn-sm" id="btnSubmitProduct">Simpan Produk</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="/scripts/theme.js"></script>

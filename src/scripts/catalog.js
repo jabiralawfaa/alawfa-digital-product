@@ -4,10 +4,8 @@ async function loadProducts() {
   const grid = document.getElementById('productGrid');
 
   try {
-    const files = [
-      'ebook-resep-keluarga.json',
-      'template-cv-modern.json',
-    ];
+    const filesRes = await fetch(API_BASE);
+    const files = filesRes.ok ? await filesRes.json() : [];
 
     const products = [];
 

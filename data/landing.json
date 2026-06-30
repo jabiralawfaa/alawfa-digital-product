@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "title": "Temukan Produk Digital Terbaik",
+    "subtitle": "Ebook, template, kelas online, dan lainnya — dari kreator Indonesia untuk kamu."
+  },
+  "about": {
+    "heading": "Tentang Kami",
+    "cards": [
+      {
+        "title": "Produk Digital",
+        "description": "Kumpulan ebook, template, dan kelas online berkualitas yang siap membantu kamu belajar & berkembang."
+      },
+      {
+        "title": "Mudah & Aman",
+        "description": "Klik \"Kunjungi\", langsung diarahkan ke halaman pembelian di Lynk.id — cepat, aman, tanpa ribet."
+      },
+      {
+        "title": "Komunitas",
+        "description": "Bergabung dengan ribuan pembeli yang sudah merasakan manfaat produk digital dari para kreator terbaik."
+      }
+    ]
+  },
+  "contact": {
+    "email": "hello@al-awfa.com",
+    "lynkUrl": "https://lynk.id/namauser",
+    "formAction": "#"
+  },
+  "footer": {
+    "copyright": "© 2026 Al-Awfa Digital Product. All rights reserved."
+  }
+}
