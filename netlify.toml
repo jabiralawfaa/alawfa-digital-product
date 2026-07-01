@@ -1,0 +1,24 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "functions"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from = "/data"
+  to = "/.netlify/functions/data"
+  status = 200
+
+[[redirects]]
+  from = "/data/products"
+  to = "/.netlify/functions/data"
+  status = 200
+
+[[redirects]]
+  from = "/media"
+  to = "/.netlify/functions/media"
+  status = 200
