@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, readFileSync, cpSync, statSync, readdirSync, writeFileSync, rmSync, mkdirSync } from 'fs'
-import { trackView, trackClick, saveProduct, deleteProduct, saveLanding } from './api/github.js'
+import { trackView, trackClick, saveProduct, deleteProduct, saveLanding, uploadFile } from './api/github.js'
 import errorLoggerPlugin from './tools/vite-error-logger.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -93,6 +93,52 @@ export default defineConfig({
       closeBundle() {
         const src = resolve(__dirname, 'data')
         const dest = resolve(__dirname, 'dist/data')
+        if (existsSync(src)) {
+          cpSync(src, dest, { recursive: true, force: true })
+        }
+      },
+    },
+    {
+      name: 'serve-media',
+      configureServer(server) {
+        server.middlewares.use('/media', (req, res, next) => {
+          const filePath = resolve(__dirname, 'media', req.url.slice(1))
+          if (existsSync(filePath)) {
+            if (statSync(filePath).isFile()) {
+              const ext = filePath.split('.').pop().toLowerCase()
+              const mime = {
+                jpg: 'image/jpeg', jpeg: 'image/jpeg', png: 'image/png',
+                gif: 'image/gif', webp: 'image/webp', svg: 'image/svg+xml',
+                mp4: 'video/mp4', webm: 'video/webm', mov: 'video/quicktime',
+              }[ext] || 'application/octet-stream'
+              res.setHeader('Content-Type', mime)
+              res.end(readFileSync(filePath))
+              return
+            }
+            if (statSync(filePath).isDirectory()) {
+              const files = readdirSync(filePath).filter(f => {
+                const ext = f.split('.').pop().toLowerCase()
+                return /^(jpg|jpeg|png|gif|webp|svg|mp4|webm|mov)$/.test(ext)
+              }).map(f => {
+                const stat = statSync(resolve(filePath, f))
+                return {
+                  name: f,
+                  url: `/media/${f}`,
+                  size: stat.size,
+                  mtime: stat.mtimeMs,
+                }
+              }).sort((a, b) => b.mtime - a.mtime)
+              res.setHeader('Content-Type', 'application/json')
+              res.end(JSON.stringify(files))
+              return
+            }
+          }
+          next()
+        })
+      },
+      closeBundle() {
+        const src = resolve(__dirname, 'media')
+        const dest = resolve(__dirname, 'dist/media')
         if (existsSync(src)) {
           cpSync(src, dest, { recursive: true, force: true })
         }
@@ -191,6 +237,29 @@ export default defineConfig({
             const localLandingPath = resolve(__dirname, 'data/landing.json')
             writeFileSync(localLandingPath, JSON.stringify(landing, null, 2), 'utf-8')
             json(res, 200, { ok: true })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/upload', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const { file, name } = await parseBody(req)
+            if (!file || !name) return json(res, 400, { error: 'file (base64) dan name required' })
+
+            const safeName = name.replace(/[^a-zA-Z0-9._-]/g, '_')
+            const localPath = resolve(__dirname, 'media', safeName)
+            mkdirSync(resolve(__dirname, 'media'), { recursive: true })
+            writeFileSync(localPath, Buffer.from(file, 'base64'))
+
+            await uploadFile(safeName, file)
+
+            json(res, 200, { url: `/media/${safeName}` })
           } catch (err) {
             json(res, 500, { error: err.message })
           }

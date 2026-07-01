@@ -26,6 +26,7 @@
         <a href="#" class="active" data-section="overview">Overview</a>
         <a href="#" data-section="products">Produk</a>
         <a href="#" data-section="landing">Landing Page</a>
+        <a href="#" data-section="media">Media</a>
         <a href="#" data-section="logout" class="logout-link">Logout</a>
       </nav>
     </aside>
@@ -218,6 +219,24 @@
         </div>
       </section>
 
+      <!-- MEDIA LIBRARY -->
+      <section class="admin-section" id="section-media">
+        <div class="section-header">
+          <h1>Media</h1>
+          <p>Semua file gambar & video yang sudah diupload</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchMedia" placeholder="Cari file..." />
+          </div>
+          <input type="file" id="uploadMediaBtn" accept="image/*,video/*" style="display:none" />
+          <button class="btn-primary btn-sm" id="btnUploadMedia">+ Upload Baru</button>
+        </div>
+        <div class="media-grid" id="mediaGrid">
+          <p class="loading-text">Memuat media...</p>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -250,19 +269,47 @@
             <input type="url" id="formLynkUrl" class="form-control" placeholder="https://lynk.id/..." required />
           </div>
           <div class="form-group">
-            <label>URL Foto Preview</label>
-            <input type="url" id="formPreviewImage" class="form-control" placeholder="/placeholder.svg" />
+            <label>Foto Preview</label>
+            <div class="upload-row">
+              <input type="text" id="formPreviewImage" class="form-control" placeholder="/media/..." />
+              <button type="button" class="btn-upload" data-target="formPreviewImage" data-accept="image/*">Pilih Gambar</button>
+              <button type="button" class="btn-browse" data-target="formPreviewImage">Cari</button>
+            </div>
           </div>
           <div class="form-group">
             <label>Deskripsi</label>
-            <textarea id="formDescription" class="form-control" rows="6"></textarea>
+            <textarea id="formDescription" class="form-control"></textarea>
           </div>
           <div class="form-group">
-            <label>URL Galeri (pisahkan dengan koma)</label>
-            <input type="text" id="formGallery" class="form-control" placeholder="/media/produk/img1.jpg, /media/produk/video.mp4" />
+            <label>Galeri (pisahkan dengan koma)</label>
+            <div class="upload-row">
+              <input type="text" id="formGallery" class="form-control" placeholder="/media/..., /media/..." />
+              <button type="button" class="btn-upload" data-target="formGallery" data-accept="image/*,video/*">Pilih File</button>
+              <button type="button" class="btn-browse" data-target="formGallery">Cari</button>
+            </div>
           </div>
           <button type="submit" class="btn-primary btn-sm" id="btnSubmitProduct">Simpan Produk</button>
         </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MEDIA BROWSER MODAL -->
+  <div class="modal-overlay" id="mediaModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2>Pilih Media</h2>
+        <button class="modal-close" id="mediaModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchMediaModal" placeholder="Cari file..." />
+          </div>
+        </div>
+        <div class="media-grid" id="mediaModalGrid">
+          <p class="loading-text">Memuat media...</p>
+        </div>
       </div>
     </div>
   </div>

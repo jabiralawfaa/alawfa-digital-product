@@ -1,5 +1,13 @@
 const API_BASE = '/data/products';
 
+function formatPrice(price) {
+  if (!price) return ''
+  if (/^(Rp|IDR)/i.test(price.trim())) return price.trim()
+  const num = price.replace(/[^0-9]/g, '')
+  if (!num) return price.trim()
+  return 'Rp ' + Number(num).toLocaleString('id-ID')
+}
+
 function getProductId() {
   const params = new URLSearchParams(window.location.search);
   return params.get('id');
@@ -40,7 +48,7 @@ async function loadDetail() {
       <header class="product-detail-header">
         <span class="product-detail-category">${product.category}</span>
         <h1 class="product-detail-title">${product.title}</h1>
-        ${product.price ? `<p class="product-detail-price">${product.price}</p>` : ''}
+        ${product.price ? `<p class="product-detail-price">${formatPrice(product.price)}</p>` : ''}
       </header>
 
       <div class="product-detail-description">

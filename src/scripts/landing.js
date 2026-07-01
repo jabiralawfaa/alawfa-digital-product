@@ -1,5 +1,13 @@
 const API_BASE = '/data/products';
 
+function formatPrice(price) {
+  if (!price) return ''
+  if (/^(Rp|IDR)/i.test(price.trim())) return price.trim()
+  const num = price.replace(/[^0-9]/g, '')
+  if (!num) return price.trim()
+  return 'Rp ' + Number(num).toLocaleString('id-ID')
+}
+
 // ============ NAVBAR SCROLL ============
 const navbar = document.getElementById('navbar');
 
@@ -55,7 +63,7 @@ async function loadProducts() {
         <div class="product-card-body">
           <span class="product-card-category">${product.category}</span>
           <h2 class="product-card-title">${product.title}</h2>
-          ${product.price ? `<p class="product-card-price">${product.price}</p>` : ''}
+          ${product.price ? `<p class="product-card-price">${formatPrice(product.price)}</p>` : ''}
         </div>
       </article>
     `).join('');

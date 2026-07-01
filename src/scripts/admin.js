@@ -20,6 +20,7 @@ const sections = {
   overview: document.getElementById('section-overview'),
   products: document.getElementById('section-products'),
   landing: document.getElementById('section-landing'),
+  media: document.getElementById('section-media'),
 }
 
 document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
@@ -37,6 +38,7 @@ document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
     link.classList.add('active')
     Object.values(sections).forEach(s => s.classList.remove('active'))
     sections[section].classList.add('active')
+    if (section === 'media') loadMedia(document.getElementById('searchMedia').value)
   })
 })
 
@@ -158,6 +160,113 @@ const productForm = document.getElementById('productForm')
 const btnSubmit = document.getElementById('btnSubmitProduct')
 
 let editingId = null
+let descEditorInited = false
+
+function initDescEditor() {
+  if (descEditorInited || typeof hugeRTE === 'undefined') return
+  descEditorInited = true
+  hugeRTE.init({
+    selector: '#formDescription',
+    height: 350,
+    menubar: false,
+    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
+    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image browseMedia link code',
+    content_style: 'body { font-family: Inter, sans-serif; font-size: 14px; }',
+    automatic_uploads: true,
+    setup: (editor) => {
+      editor.ui.registry.addButton('browseMedia', {
+        text: 'Browse',
+        tooltip: 'Cari Media',
+        onAction: () => {
+          openMediaTarget = '__editor__'
+          const modal = document.getElementById('mediaModal')
+          modal.classList.add('open')
+          loadMedia(document.getElementById('searchMediaModal').value).then(() => {
+            renderMediaGrid('mediaModalGrid', '', true)
+          })
+        },
+      })
+    },
+    images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(blobInfo.blob())
+      reader.onload = async () => {
+        try {
+          const base64 = reader.result.split(',')[1]
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${sessionStorage.getItem('admin_auth')}`,
+            },
+            body: JSON.stringify({ file: base64, name: blobInfo.filename() }),
+          })
+          if (!res.ok) {
+            const err = await res.json()
+            reject(new Error(err.error || 'Upload failed'))
+            return
+          }
+          const { url } = await res.json()
+          resolve(url)
+        } catch (err) {
+          reject(err)
+        }
+      }
+      reader.onerror = () => reject(new Error('Failed to read file'))
+    }),
+  })
+}
+
+// ============ FILE UPLOAD ============
+document.querySelectorAll('.btn-upload').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.dataset.target
+    const accept = btn.dataset.accept || '*/*'
+    const input = document.createElement('input')
+    input.type = 'file'
+    input.accept = accept
+    input.style.display = 'none'
+    input.addEventListener('change', async () => {
+      const file = input.files[0]
+      if (!file) return
+      const origText = btn.textContent
+      btn.disabled = true
+      btn.textContent = 'Mengunggah...'
+      try {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        await new Promise(r => { reader.onload = r })
+        const base64 = reader.result.split(',')[1]
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: apiHeaders(),
+          body: JSON.stringify({ file: base64, name: file.name }),
+        })
+        if (!res.ok) {
+          const err = await res.json()
+          alert('Gagal upload: ' + (err.error || 'Unknown'))
+          return
+        }
+        const { url } = await res.json()
+        const target = document.getElementById(targetId)
+        if (targetId === 'formGallery') {
+          const existing = target.value.trim()
+          target.value = existing ? existing + ', ' + url : url
+        } else {
+          target.value = url
+        }
+      } catch (err) {
+        alert('Gagal upload: ' + err.message)
+      } finally {
+        btn.disabled = false
+        btn.textContent = origText
+        input.remove()
+      }
+    })
+    document.body.appendChild(input)
+    input.click()
+  })
+})
 
 document.getElementById('btnAddProduct').addEventListener('click', () => openAddModal())
 document.getElementById('modalClose').addEventListener('click', closeModal)
@@ -171,7 +280,10 @@ function openAddModal() {
   productForm.reset()
   document.getElementById('productId').value = ''
   btnSubmit.textContent = 'Simpan Produk'
+  const descEditor = hugeRTE && hugeRTE.get('formDescription')
+  if (descEditor) descEditor.setContent('')
   modal.classList.add('open')
+  setTimeout(initDescEditor, 100)
 }
 
 function openEditModal(id) {
@@ -186,15 +298,23 @@ function openEditModal(id) {
   document.getElementById('formPrice').value = product.price || ''
   document.getElementById('formLynkUrl').value = product.lynkUrl || ''
   document.getElementById('formPreviewImage').value = product.previewImage || ''
-  document.getElementById('formDescription').value = product.description || ''
+  const descEditor = hugeRTE && hugeRTE.get('formDescription')
+  if (descEditor) {
+    descEditor.setContent(product.description || '')
+  } else {
+    document.getElementById('formDescription').value = product.description || ''
+  }
   document.getElementById('formGallery').value = (product.gallery || []).join(', ')
   btnSubmit.textContent = 'Update Produk'
   modal.classList.add('open')
+  setTimeout(initDescEditor, 100)
 }
 
 function closeModal() {
   modal.classList.remove('open')
   editingId = null
+  const descEditor = hugeRTE && hugeRTE.get('formDescription')
+  if (descEditor) descEditor.setContent('')
 }
 
 productForm.addEventListener('submit', async (e) => {
@@ -208,7 +328,10 @@ productForm.addEventListener('submit', async (e) => {
     price: document.getElementById('formPrice').value.trim(),
     lynkUrl: document.getElementById('formLynkUrl').value.trim(),
     previewImage: document.getElementById('formPreviewImage').value.trim() || '/placeholder.svg',
-    description: document.getElementById('formDescription').value.trim(),
+    description: (hugeRTE && hugeRTE.get('formDescription')
+      ? hugeRTE.get('formDescription').getContent()
+      : document.getElementById('formDescription').value
+    ).trim(),
     gallery: document.getElementById('formGallery').value.split(',').map(s => s.trim()).filter(Boolean),
     createdAt: editingId ? undefined : new Date().toISOString(),
   }
@@ -340,6 +463,150 @@ document.getElementById('btnSaveLanding').addEventListener('click', async () => 
   }
 })
 
+// ============ MEDIA LIBRARY ============
+let allMedia = []
+
+async function loadMedia(search = '') {
+  try {
+    const res = await fetch('/media')
+    allMedia = res.ok ? await res.json() : []
+  } catch {
+    allMedia = []
+  }
+  renderMediaGrid('mediaGrid', search, false)
+}
+
+function renderMediaGrid(gridId, search = '', selectable = false) {
+  const grid = document.getElementById(gridId)
+  const filtered = search
+    ? allMedia.filter(m => m.name.toLowerCase().includes(search.toLowerCase()))
+    : allMedia
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p class="loading-text">Belum ada media.</p>'
+    return
+  }
+
+  grid.innerHTML = filtered.map(m => {
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(m.name)
+    return `<div class="media-item" data-url="${m.url}">
+      ${isImage
+        ? `<img src="${m.url}" alt="${m.name}" loading="lazy" />`
+        : `<video src="${m.url}" muted preload="metadata"></video>`
+      }
+      <div class="media-name">${m.name}</div>
+      <div class="media-check">&#10003;</div>
+    </div>`
+  }).join('')
+
+  grid.querySelectorAll('.media-item').forEach(el => {
+    el.addEventListener('click', () => {
+      if (selectable) {
+        grid.querySelectorAll('.media-item').forEach(x => x.classList.remove('selected'))
+        el.classList.add('selected')
+      }
+      const url = el.dataset.url
+      navigator.clipboard.writeText(url).catch(() => {})
+      openMediaTarget && insertMediaToTarget(url)
+    })
+  })
+}
+
+let openMediaTarget = null
+
+function insertMediaToTarget(url) {
+  if (openMediaTarget === '__editor__') {
+    const editor = hugeRTE && hugeRTE.get('formDescription')
+    if (editor) {
+      const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(url)
+      editor.insertContent(isImage
+        ? `<img src="${url}" alt="" style="max-width:100%" />`
+        : `<video src="${url}" controls style="max-width:100%"></video>`
+      )
+    }
+    openMediaTarget = null
+    document.getElementById('mediaModal').classList.remove('open')
+    return
+  }
+  const target = document.getElementById(openMediaTarget)
+  if (!target) return
+  if (openMediaTarget === 'formGallery') {
+    const existing = target.value.trim()
+    target.value = existing ? existing + ', ' + url : url
+  } else {
+    target.value = url
+  }
+  openMediaTarget = null
+  document.getElementById('mediaModal').classList.remove('open')
+}
+
+document.querySelectorAll('.btn-browse').forEach(btn => {
+  btn.addEventListener('click', () => {
+    openMediaTarget = btn.dataset.target
+    const modal = document.getElementById('mediaModal')
+    modal.classList.add('open')
+    loadMedia(document.getElementById('searchMediaModal').value).then(() => {
+      renderMediaGrid('mediaModalGrid', '', true)
+    })
+  })
+})
+
+const mediaModal = document.getElementById('mediaModal')
+document.getElementById('mediaModalClose').addEventListener('click', () => {
+  mediaModal.classList.remove('open')
+  openMediaTarget = null
+})
+mediaModal.addEventListener('click', e => {
+  if (e.target === mediaModal) {
+    mediaModal.classList.remove('open')
+    openMediaTarget = null
+  }
+})
+
+document.getElementById('searchMediaModal').addEventListener('input', e => {
+  renderMediaGrid('mediaModalGrid', e.target.value, true)
+})
+
+// Section media
+document.getElementById('searchMedia').addEventListener('input', e => {
+  renderMediaGrid('mediaGrid', e.target.value, false)
+})
+
+document.getElementById('btnUploadMedia').addEventListener('click', () => {
+  document.getElementById('uploadMediaBtn').click()
+})
+
+document.getElementById('uploadMediaBtn').addEventListener('change', async () => {
+  const file = document.getElementById('uploadMediaBtn').files[0]
+  if (!file) return
+  const btn = document.getElementById('btnUploadMedia')
+  btn.disabled = true
+  btn.textContent = 'Mengunggah...'
+  try {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    await new Promise(r => { reader.onload = r })
+    const base64 = reader.result.split(',')[1]
+    const res = await fetch('/api/upload', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({ file: base64, name: file.name }),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Gagal upload: ' + (err.error || 'Unknown'))
+      return
+    }
+    await loadMedia(document.getElementById('searchMedia').value)
+  } catch (err) {
+    alert('Gagal upload: ' + err.message)
+  } finally {
+    btn.disabled = false
+    btn.textContent = '+ Upload Baru'
+    document.getElementById('uploadMediaBtn').value = ''
+  }
+})
+
 // ============ REFRESH ============
 async function refreshData() {
   await loadData()
@@ -362,9 +629,10 @@ async function init() {
       height: 300,
       menubar: false,
       plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount',
-      toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image link code',
+    toolbar: 'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | image browseMedia link code',
       content_style: 'body { font-family: Inter, sans-serif; font-size: 14px; }',
     })
+
   }
 }
 

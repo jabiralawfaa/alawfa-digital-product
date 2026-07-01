@@ -281,10 +281,14 @@
   background: var(--bg-card);
   border-radius: var(--radius);
   width: 100%;
-  max-width: 600px;
+  max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.modal-lg {
+  max-width: 900px;
 }
 
 .modal-header {
@@ -369,6 +373,139 @@ textarea.form-control {
 .save-status {
   font-size: 0.875rem;
   color: var(--text-secondary);
+}
+
+/* ============ UPLOAD ============ */
+.upload-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.upload-row .form-control {
+  flex: 1;
+}
+
+.btn-upload {
+  padding: 0.5rem 1rem;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity var(--transition);
+}
+
+.btn-upload:hover {
+  opacity: 0.85;
+}
+
+.btn-upload:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-browse {
+  padding: 0.5rem 0.75rem;
+  background: var(--coral);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity var(--transition);
+}
+
+.btn-browse:hover {
+  opacity: 0.85;
+}
+
+/* ============ MEDIA LIBRARY ============ */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.media-item {
+  background: var(--bg-surface);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color var(--transition), transform var(--transition);
+  position: relative;
+}
+
+.media-item:hover {
+  border-color: var(--teal);
+  transform: translateY(-2px);
+}
+
+.media-item.selected {
+  border-color: var(--teal);
+}
+
+.media-item img,
+.media-item video {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  display: block;
+}
+
+.media-item video {
+  background: #000;
+}
+
+.media-item .media-name {
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-item .media-check {
+  position: absolute;
+  top: 0.375rem;
+  right: 0.375rem;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: var(--teal);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.media-item.selected .media-check {
+  display: flex;
+}
+
+.media-insert-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.media-insert-bar input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 /* ============ LANDING EDITOR ============ */

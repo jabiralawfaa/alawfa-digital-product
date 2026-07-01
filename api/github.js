@@ -108,6 +108,20 @@ export async function deleteProduct(productId) {
   })
 }
 
+export async function uploadFile(fileName, base64Content) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `media/${fileName}`
+  const sha = await getFileSha(path)
+
+  await octokit.repos.createOrUpdateFileContents({
+    owner, repo, path,
+    message: `upload: ${fileName}`,
+    content: base64Content,
+    sha,
+  })
+}
+
 export async function saveLanding(data) {
   const octokit = getOctokit()
   const { owner, repo } = getRepo()
