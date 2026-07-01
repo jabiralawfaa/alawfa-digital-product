@@ -3,22 +3,29 @@
   publish = "dist"
   functions = "functions"
 
+[functions]
+  node_bundler = "esbuild"
+
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/api"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/data"
   to = "/.netlify/functions/data"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/data/products"
   to = "/.netlify/functions/data"
   status = 200
+  force = true
 
 [[redirects]]
   from = "/media"
   to = "/.netlify/functions/media"
   status = 200
+  force = true
