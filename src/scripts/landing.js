@@ -112,7 +112,7 @@ async function loadServices() {
         />
         <div class="service-card-body">
           <h3 class="service-card-title">${s.title}</h3>
-          ${s.price ? `<p class="service-card-price">${formatPrice(s.price)}</p>` : ''}
+          ${s.priceMin || s.priceMax ? `<p class="service-card-price">${s.priceMin ? formatPrice(s.priceMin) : ''}${s.priceMin && s.priceMax ? ' - ' : ''}${s.priceMax ? formatPrice(s.priceMax) : ''}</p>` : ''}
           <p class="service-card-desc">${(s.description || '').replace(/<[^>]*>/g, '').slice(0, 120)}</p>
         </div>
       </article>

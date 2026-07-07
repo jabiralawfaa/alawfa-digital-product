@@ -777,7 +777,8 @@ function openEditServiceModal(id) {
 
   document.getElementById('serviceId').value = service.id
   document.getElementById('serviceFormTitle').value = service.title || ''
-  document.getElementById('serviceFormPrice').value = service.price || ''
+  document.getElementById('serviceFormPriceMin').value = service.priceMin || ''
+  document.getElementById('serviceFormPriceMax').value = service.priceMax || ''
   document.getElementById('serviceFormPreviewImage').value = service.previewImage || ''
   document.getElementById('serviceFormLynkUrl').value = service.lynkUrl || ''
   document.getElementById('serviceFormDescription').value = service.description || ''
@@ -798,7 +799,8 @@ serviceForm.addEventListener('submit', async (e) => {
   const service = {
     id,
     title: document.getElementById('serviceFormTitle').value.trim(),
-    price: document.getElementById('serviceFormPrice').value.trim(),
+    priceMin: document.getElementById('serviceFormPriceMin').value.trim(),
+    priceMax: document.getElementById('serviceFormPriceMax').value.trim(),
     previewImage: document.getElementById('serviceFormPreviewImage').value.trim() || '/placeholder.svg',
     lynkUrl: document.getElementById('serviceFormLynkUrl').value.trim(),
     description: document.getElementById('serviceFormDescription').value.trim(),
