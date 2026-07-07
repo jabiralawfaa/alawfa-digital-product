@@ -18,6 +18,7 @@
         <li><a href="#hero">Beranda</a></li>
         <li><a href="#about">Tentang</a></li>
         <li><a href="#catalog">Katalog</a></li>
+        <li><a href="#services">Jasa</a></li>
         <li><a href="#contact">Kontak</a></li>
         <li>
           <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
@@ -78,6 +79,16 @@
       </div>
     </section>
 
+    <section class="services" id="services">
+      <div class="container">
+        <h2 class="section-title">Layanan Jasa</h2>
+        <p class="section-subtitle">Kami juga menerima pembuatan berbagai kebutuhan digital Anda.</p>
+        <div class="services-grid" id="serviceGrid">
+          <p class="loading-text">Memuat jasa...</p>
+        </div>
+      </div>
+    </section>
+
     <section class="contact" id="contact">
       <div class="container">
         <h2 class="section-title">Hubungi Kami</h2>
@@ -113,6 +124,7 @@
           <li><a href="#hero">Beranda</a></li>
           <li><a href="#about">Tentang</a></li>
           <li><a href="#catalog">Katalog</a></li>
+          <li><a href="#services">Jasa</a></li>
           <li><a href="#contact">Kontak</a></li>
         </ul>
       </div>
@@ -128,6 +140,36 @@
       </div>
     </div>
   </footer>
+
+  <!-- ORDER MODAL -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="orderModalTitle">Pesan Jasa</h2>
+        <button class="modal-close" id="orderModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="orderForm">
+          <input type="hidden" id="orderServiceId" />
+          <div class="form-group">
+            <label>Nama Lengkap</label>
+            <input type="text" id="orderCustomerName" class="order-input" required />
+          </div>
+          <div class="form-group">
+            <label>Nomor WhatsApp</label>
+            <input type="tel" id="orderCustomerWa" class="order-input" placeholder="08123456789" required />
+          </div>
+          <div id="orderCustomFields"></div>
+          <button type="submit" class="btn-primary btn-submit" id="btnSubmitOrder">Kirim Pesanan</button>
+        </form>
+        <div id="orderSuccess" style="display:none;text-align:center;padding:2rem 0">
+          <p style="font-size:1.125rem;font-weight:600;margin-bottom:0.5rem">Pesanan Terkirim!</p>
+          <p style="opacity:0.7">Kami akan menghubungi Anda melalui WhatsApp dalam waktu 1x24 jam.</p>
+          <button class="btn-primary" id="btnOrderAgain" style="margin-top:1rem">Pesan Lagi</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/scripts/theme.js"></script>
   <script type="module" src="/scripts/landing.js"></script>

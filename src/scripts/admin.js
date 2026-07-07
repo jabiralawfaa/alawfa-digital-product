@@ -607,12 +607,383 @@ document.getElementById('uploadMediaBtn').addEventListener('change', async () =>
   }
 })
 
+// ============ SECTION SWITCHING UPDATE ============
+sections.services = document.getElementById('section-services')
+sections.orders = document.getElementById('section-orders')
+
+const origClick = document.querySelector('.sidebar-nav a[data-section]')?.click
+document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
+  const section = link.dataset.section
+  if (section === 'services') {
+    link.addEventListener('click', () => { setTimeout(loadServices, 50) })
+  }
+  if (section === 'orders') {
+    link.addEventListener('click', () => { setTimeout(loadOrders, 50) })
+  }
+})
+
+// ============ SERVICES ============
+let allServices = []
+
+async function loadServices() {
+  try {
+    const filesRes = await fetch('/data/services')
+    const files = filesRes.ok ? await filesRes.json() : []
+    allServices = []
+    for (const file of files) {
+      const res = await fetch(`/data/services/${file}`)
+      if (res.ok) allServices.push(await res.json())
+    }
+    renderServiceTable(document.getElementById('searchService').value)
+  } catch {
+    allServices = []
+    document.getElementById('serviceTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data.</td></tr>'
+  }
+}
+
+function renderServiceTable(filter = '') {
+  const tbody = document.getElementById('serviceTableBody')
+  const filtered = filter
+    ? allServices.filter(s => s.title.toLowerCase().includes(filter.toLowerCase()))
+    : allServices
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Belum ada jasa.</td></tr>'
+    return
+  }
+
+  tbody.innerHTML = filtered.map(s => `
+    <tr>
+      <td><img src="${s.previewImage || '/placeholder.svg'}" alt="${s.title}" /></td>
+      <td><strong>${s.title}</strong></td>
+      <td>${s.price || '-'}</td>
+      <td>${(s.formFields || []).length} pertanyaan</td>
+      <td>
+        <button class="btn-edit" data-id="${s.id}">Edit</button>
+        <button class="btn-delete" data-id="${s.id}">Hapus</button>
+      </td>
+    </tr>
+  `).join('')
+
+  tbody.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', () => openEditServiceModal(btn.dataset.id))
+  })
+  tbody.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => deleteService(btn.dataset.id))
+  })
+}
+
+document.getElementById('searchService').addEventListener('input', e => {
+  renderServiceTable(e.target.value)
+})
+
+// ============ SERVICE FORM FIELDS ============
+function renderFormFields(fields) {
+  const container = document.getElementById('formFieldsContainer')
+  if (!fields || fields.length === 0) {
+    container.innerHTML = '<p style="font-size:0.875rem;opacity:0.6">Belum ada pertanyaan. Klik tombol di bawah untuk menambah.</p>'
+    return
+  }
+
+  container.innerHTML = fields.map((f, i) => `
+    <div class="form-field-item" data-index="${i}">
+      <div style="flex:1">
+        <div class="field-inputs">
+          <input type="text" class="field-label" value="${f.label}" placeholder="Pertanyaan..." />
+          <select class="field-type">
+            <option value="text" ${f.type === 'text' ? 'selected' : ''}>Teks</option>
+            <option value="textarea" ${f.type === 'textarea' ? 'selected' : ''}>Paragraf</option>
+            <option value="select" ${f.type === 'select' ? 'selected' : ''}>Pilihan</option>
+          </select>
+        </div>
+        <div class="field-options" style="display:${f.type === 'select' ? 'block' : 'none'}">
+          <textarea class="field-options-text" rows="2" placeholder="Opsi (pisahkan dengan koma)">${(f.options || []).join(', ')}</textarea>
+        </div>
+      </div>
+      <button type="button" class="btn-remove-field" data-index="${i}">&times;</button>
+    </div>
+  `).join('')
+
+  container.querySelectorAll('.field-type').forEach(sel => {
+    sel.addEventListener('change', () => {
+      const item = sel.closest('.form-field-item')
+      const optionsDiv = item.querySelector('.field-options')
+      optionsDiv.style.display = sel.value === 'select' ? 'block' : 'none'
+    })
+  })
+
+  container.querySelectorAll('.btn-remove-field').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.form-field-item')
+      item.remove()
+    })
+  })
+}
+
+function collectFormFields() {
+  const items = document.querySelectorAll('#formFieldsContainer .form-field-item')
+  return Array.from(items).map(item => {
+    const label = item.querySelector('.field-label').value.trim()
+    const type = item.querySelector('.field-type').value
+    const options = item.querySelector('.field-options-text')
+    return {
+      id: 'field_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      label: label || 'Pertanyaan',
+      type,
+      required: true,
+      options: type === 'select' && options ? options.value.split(',').map(s => s.trim()).filter(Boolean) : [],
+    }
+  })
+}
+
+document.getElementById('btnAddFormField').addEventListener('click', () => {
+  const container = document.getElementById('formFieldsContainer')
+  const emptyMsg = container.querySelector('p')
+  if (emptyMsg) container.innerHTML = ''
+  const fields = collectFormFields()
+  fields.push({ id: 'field_new', label: '', type: 'text', required: true, options: [] })
+  renderFormFields(fields)
+})
+
+// ============ SERVICE MODAL ============
+const serviceModal = document.getElementById('serviceModal')
+const serviceModalTitle = document.getElementById('serviceModalTitle')
+const serviceForm = document.getElementById('serviceForm')
+const btnSubmitService = document.getElementById('btnSubmitService')
+
+let editingServiceId = null
+
+document.getElementById('btnAddService').addEventListener('click', () => openAddServiceModal())
+document.getElementById('serviceModalClose').addEventListener('click', () => closeServiceModal())
+serviceModal.addEventListener('click', e => {
+  if (e.target === serviceModal) closeServiceModal()
+})
+
+function openAddServiceModal() {
+  editingServiceId = null
+  serviceModalTitle.textContent = 'Tambah Jasa Baru'
+  serviceForm.reset()
+  document.getElementById('serviceId').value = ''
+  document.getElementById('formFieldsContainer').innerHTML = '<p style="font-size:0.875rem;opacity:0.6">Belum ada pertanyaan. Klik tombol di bawah untuk menambah.</p>'
+  btnSubmitService.textContent = 'Simpan Jasa'
+  serviceModal.classList.add('open')
+}
+
+function openEditServiceModal(id) {
+  editingServiceId = id
+  serviceModalTitle.textContent = 'Edit Jasa'
+  const service = allServices.find(s => s.id === id)
+  if (!service) return
+
+  document.getElementById('serviceId').value = service.id
+  document.getElementById('serviceFormTitle').value = service.title || ''
+  document.getElementById('serviceFormPrice').value = service.price || ''
+  document.getElementById('serviceFormPreviewImage').value = service.previewImage || ''
+  document.getElementById('serviceFormLynkUrl').value = service.lynkUrl || ''
+  document.getElementById('serviceFormDescription').value = service.description || ''
+  renderFormFields(service.formFields || [])
+  btnSubmitService.textContent = 'Update Jasa'
+  serviceModal.classList.add('open')
+}
+
+function closeServiceModal() {
+  serviceModal.classList.remove('open')
+  editingServiceId = null
+}
+
+serviceForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const id = editingServiceId || generateServiceId(document.getElementById('serviceFormTitle').value)
+
+  const service = {
+    id,
+    title: document.getElementById('serviceFormTitle').value.trim(),
+    price: document.getElementById('serviceFormPrice').value.trim(),
+    previewImage: document.getElementById('serviceFormPreviewImage').value.trim() || '/placeholder.svg',
+    lynkUrl: document.getElementById('serviceFormLynkUrl').value.trim(),
+    description: document.getElementById('serviceFormDescription').value.trim(),
+    formFields: collectFormFields(),
+    createdAt: editingServiceId ? undefined : new Date().toISOString(),
+  }
+
+  if (!editingServiceId) service.createdAt = new Date().toISOString()
+
+  btnSubmitService.disabled = true
+  btnSubmitService.textContent = 'Menyimpan...'
+
+  try {
+    const res = await fetch('/api/save-service', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({ service }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Gagal menyimpan: ' + (err.error || 'Unknown error'))
+      return
+    }
+
+    closeServiceModal()
+    await loadServices()
+  } catch (err) {
+    alert('Gagal menyimpan: ' + err.message)
+  } finally {
+    btnSubmitService.disabled = false
+    btnSubmitService.textContent = editingServiceId ? 'Update Jasa' : 'Simpan Jasa'
+  }
+})
+
+function generateServiceId(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'jasa-' + Date.now()
+}
+
+async function deleteService(id) {
+  if (!confirm(`Hapus jasa "${allServices.find(s => s.id === id)?.title}"?`)) return
+
+  try {
+    const res = await fetch('/api/delete-service', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({ serviceId: id }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Gagal menghapus: ' + (err.error || 'Unknown error'))
+      return
+    }
+
+    await loadServices()
+  } catch (err) {
+    alert('Gagal menghapus: ' + err.message)
+  }
+}
+
+// ============ ORDERS ============
+let allOrders = []
+
+async function loadOrders() {
+  const tbody = document.getElementById('orderTableBody')
+  tbody.innerHTML = '<tr><td colspan="5">Memuat data...</td></tr>'
+
+  try {
+    const res = await fetch('/api/get-orders', { headers: apiHeaders() })
+    allOrders = res.ok ? await res.json() : []
+    renderOrderTable(document.getElementById('searchOrder').value)
+  } catch {
+    allOrders = []
+    tbody.innerHTML = '<tr><td colspan="5">Gagal memuat data.</td></tr>'
+  }
+}
+
+function renderOrderTable(filter = '') {
+  const tbody = document.getElementById('orderTableBody')
+  let filtered = filter
+    ? allOrders.filter(o =>
+        o.customerName.toLowerCase().includes(filter.toLowerCase()) ||
+        o.customerWa.includes(filter) ||
+        (o.serviceTitle || '').toLowerCase().includes(filter.toLowerCase())
+      )
+    : allOrders
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">Belum ada pesanan.</td></tr>'
+    return
+  }
+
+  tbody.innerHTML = filtered.map(o => `
+    <tr>
+      <td style="white-space:nowrap">${formatDate(o.createdAt)}</td>
+      <td><strong>${o.customerName}</strong></td>
+      <td><a href="https://wa.me/${o.customerWa.replace(/^0+/, '62').replace(/[^0-9]/g, '')}" target="_blank" rel="noopener" style="color:var(--teal);text-decoration:none">${o.customerWa}</a></td>
+      <td>${o.serviceTitle || '-'}</td>
+      <td><button class="btn-edit" data-id="${o.id}">Detail</button></td>
+    </tr>
+  `).join('')
+
+  tbody.querySelectorAll('.btn-edit').forEach(btn => {
+    btn.addEventListener('click', () => openOrderDetail(btn.dataset.id))
+  })
+}
+
+document.getElementById('searchOrder').addEventListener('input', e => {
+  renderOrderTable(e.target.value)
+})
+
+document.getElementById('btnRefreshOrders').addEventListener('click', loadOrders)
+
+function formatDate(iso) {
+  if (!iso) return '-'
+  const d = new Date(iso)
+  return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+}
+
+// ============ ORDER DETAIL MODAL ============
+const orderModal = document.getElementById('orderModal')
+const orderModalTitle = document.getElementById('orderModalTitle')
+const orderDetailBody = document.getElementById('orderDetailBody')
+
+document.getElementById('orderModalClose').addEventListener('click', () => orderModal.classList.remove('open'))
+orderModal.addEventListener('click', e => {
+  if (e.target === orderModal) orderModal.classList.remove('open')
+})
+
+function openOrderDetail(orderId) {
+  const order = allOrders.find(o => o.id === orderId)
+  if (!order) return
+
+  orderModalTitle.textContent = 'Detail Pesanan'
+  orderDetailBody.innerHTML = `
+    <div class="order-detail-info">
+      <div class="info-row">
+        <span class="info-label">Customer</span>
+        <span class="info-value">${order.customerName}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">WhatsApp</span>
+        <span class="info-value"><a href="https://wa.me/${order.customerWa.replace(/^0+/, '62').replace(/[^0-9]/g, '')}" target="_blank" rel="noopener">${order.customerWa}</a></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Jasa</span>
+        <span class="info-value">${order.serviceTitle || '-'}</span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Waktu</span>
+        <span class="info-value">${formatDate(order.createdAt)}</span>
+      </div>
+    </div>
+    <div class="order-detail-answers">
+      <h3>Jawaban Form</h3>
+      ${order.answers && Object.keys(order.answers).length > 0
+        ? order.serviceFields
+          ? order.serviceFields.map(f => `
+            <div class="answer-row">
+              <div class="answer-question">${f.label}</div>
+              <div class="answer-value">${order.answers[f.id] || '-'}</div>
+            </div>
+          `).join('')
+          : Object.entries(order.answers).map(([q, a]) => `
+            <div class="answer-row">
+              <div class="answer-question">${q}</div>
+              <div class="answer-value">${a}</div>
+            </div>
+          `).join('')
+        : '<p style="font-size:0.875rem;opacity:0.6">Tidak ada jawaban form.</p>'
+      }
+    </div>
+  `
+
+  orderModal.classList.add('open')
+}
+
 // ============ REFRESH ============
 async function refreshData() {
   await loadData()
   renderOverview()
   renderProductTable(document.getElementById('searchProduct').value)
   loadLandingEditor()
+  await loadServices()
 }
 
 // ============ INIT ============

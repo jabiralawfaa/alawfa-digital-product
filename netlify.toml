@@ -25,7 +25,19 @@
   force = true
 
 [[redirects]]
+  from = "/data/services"
+  to = "/.netlify/functions/data"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/media"
   to = "/.netlify/functions/media"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/p/:id"
+  to = "/.netlify/functions/og?id=:id"
   status = 200
   force = true

@@ -523,6 +523,157 @@ textarea.form-control {
   color: var(--text-primary);
 }
 
+/* ============ SERVICE FORM FIELDS ============ */
+.form-field-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.form-field-item .field-inputs {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 120px;
+  gap: 0.5rem;
+}
+
+.form-field-item .field-inputs input,
+.form-field-item .field-inputs select {
+  padding: 0.5rem 0.625rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+
+.form-field-item .field-inputs input:focus,
+.form-field-item .field-inputs select:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+
+.form-field-item .field-options {
+  flex: 1;
+  margin-top: 0.375rem;
+}
+
+.form-field-item .field-options textarea {
+  width: 100%;
+  padding: 0.375rem 0.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  resize: vertical;
+}
+
+.btn-remove-field {
+  background: var(--coral);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity var(--transition);
+}
+
+.btn-remove-field:hover {
+  opacity: 0.85;
+}
+
+.btn-secondary {
+  padding: 0.5rem 1.25rem;
+  background: var(--border-color);
+  color: var(--text-primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition: opacity var(--transition);
+}
+
+.btn-secondary:hover {
+  opacity: 0.85;
+}
+
+/* ============ ORDER DETAIL ============ */
+.order-detail-info {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.order-detail-info .info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.order-detail-info .info-label {
+  font-weight: 600;
+  min-width: 100px;
+  color: var(--text-secondary);
+}
+
+.order-detail-info .info-value {
+  color: var(--text-primary);
+}
+
+.order-detail-info .info-value a {
+  color: var(--teal);
+  text-decoration: none;
+}
+
+.order-detail-answers {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+.order-detail-answers h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.order-detail-answers .answer-row {
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border-table);
+}
+
+.order-detail-answers .answer-row:last-child {
+  border-bottom: none;
+}
+
+.order-detail-answers .answer-question {
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.order-detail-answers .answer-value {
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 768px) {
   .sidebar {

@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, readFileSync, cpSync, statSync, readdirSync, writeFileSync, rmSync, mkdirSync } from 'fs'
-import { trackView, trackClick, saveProduct, deleteProduct, saveLanding, uploadFile } from './api/github.js'
+import { trackView, trackClick, saveProduct, deleteProduct, saveLanding, uploadFile, saveService, deleteService, saveOrder } from './api/github.js'
 import errorLoggerPlugin from './tools/vite-error-logger.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -260,6 +260,86 @@ export default defineConfig({
             await uploadFile(safeName, file)
 
             json(res, 200, { url: `/media/${safeName}` })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/save-service', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const { service } = await parseBody(req)
+            if (!service || !service.id || !service.title) {
+              return json(res, 400, { error: 'Missing required fields: id, title' })
+            }
+            await saveService(service)
+            const dir = resolve(__dirname, 'data/services')
+            mkdirSync(dir, { recursive: true })
+            writeFileSync(resolve(dir, `${service.id}.json`), JSON.stringify(service, null, 2), 'utf-8')
+            json(res, 200, { ok: true, id: service.id })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/delete-service', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const { serviceId } = await parseBody(req)
+            if (!serviceId) return json(res, 400, { error: 'serviceId required' })
+            await deleteService(serviceId)
+            const localPath = resolve(__dirname, 'data/services', `${serviceId}.json`)
+            if (existsSync(localPath)) rmSync(localPath)
+            json(res, 200, { ok: true })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/submit-order', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const { order } = await parseBody(req)
+            if (!order || !order.serviceId || !order.customerName || !order.customerWa) {
+              return json(res, 400, { error: 'Missing required fields: serviceId, customerName, customerWa' })
+            }
+            order.createdAt = new Date().toISOString()
+            await saveOrder(order)
+            const dir = resolve(__dirname, 'data/orders')
+            mkdirSync(dir, { recursive: true })
+            writeFileSync(resolve(dir, `${order.id}.json`), JSON.stringify(order, null, 2), 'utf-8')
+            json(res, 200, { ok: true, id: order.id })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/get-orders', async (req, res) => {
+          if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const dir = resolve(__dirname, 'data/orders')
+            if (!existsSync(dir)) {
+              json(res, 200, [])
+              return
+            }
+            const files = readdirSync(dir).filter(f => f.endsWith('.json'))
+            const orders = files.map(f => {
+              const data = JSON.parse(readFileSync(resolve(dir, f), 'utf-8'))
+              return data
+            }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            json(res, 200, orders)
           } catch (err) {
             json(res, 500, { error: err.message })
           }

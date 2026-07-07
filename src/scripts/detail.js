@@ -65,6 +65,13 @@ async function loadDetail() {
       trackClick(product.id);
     });
 
+    const btnShareWA = document.getElementById('btnShareWA');
+    const shareUrl = `${window.location.origin}/p/${product.id}`;
+    const shareText = `${product.title}\n${shareUrl}`;
+    btnShareWA.addEventListener('click', () => {
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener');
+    });
+
     trackView(product.id);
 
   } catch (err) {

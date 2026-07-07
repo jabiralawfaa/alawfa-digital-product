@@ -25,6 +25,8 @@
       <nav class="sidebar-nav">
         <a href="#" class="active" data-section="overview">Overview</a>
         <a href="#" data-section="products">Produk</a>
+        <a href="#" data-section="services">Jasa</a>
+        <a href="#" data-section="orders">Pesanan</a>
         <a href="#" data-section="landing">Landing Page</a>
         <a href="#" data-section="media">Media</a>
         <a href="#" data-section="logout" class="logout-link">Logout</a>
@@ -112,6 +114,40 @@
                 </thead>
                 <tbody id="productTableBody">
                   <tr><td colspan="7">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SERVICES -->
+      <section class="admin-section" id="section-services">
+        <div class="section-header">
+          <h1>Jasa</h1>
+          <p>Kelola layanan jasa dan pertanyaan form pemesanan</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchService" placeholder="Cari jasa..." />
+          </div>
+          <button class="btn-primary btn-sm" id="btnAddService">+ Tambah Jasa</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Foto</th>
+                    <th>Judul</th>
+                    <th>Harga</th>
+                    <th>Form Fields</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="serviceTableBody">
+                  <tr><td colspan="5">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -237,6 +273,40 @@
         </div>
       </section>
 
+      <!-- ORDERS -->
+      <section class="admin-section" id="section-orders">
+        <div class="section-header">
+          <h1>Pesanan</h1>
+          <p>Daftar pesanan masuk dari customer</p>
+        </div>
+        <div class="toolbar">
+          <div class="search-box">
+            <input type="text" id="searchOrder" placeholder="Cari pesanan..." />
+          </div>
+          <button class="btn-primary btn-sm" id="btnRefreshOrders">Segarkan</button>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="product-table">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>Customer</th>
+                    <th>WhatsApp</th>
+                    <th>Jasa</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="orderTableBody">
+                  <tr><td colspan="5">Memuat data...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -310,6 +380,67 @@
         <div class="media-grid" id="mediaModalGrid">
           <p class="loading-text">Memuat media...</p>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SERVICE MODAL -->
+  <div class="modal-overlay" id="serviceModal">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2 id="serviceModalTitle">Tambah Jasa</h2>
+        <button class="modal-close" id="serviceModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="serviceForm">
+          <input type="hidden" id="serviceId" />
+          <div class="form-group">
+            <label>Judul Jasa</label>
+            <input type="text" id="serviceFormTitle" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Harga</label>
+            <input type="text" id="serviceFormPrice" class="form-control" placeholder="Rp 150.000" />
+          </div>
+          <div class="form-group">
+            <label>Foto Preview</label>
+            <div class="upload-row">
+              <input type="text" id="serviceFormPreviewImage" class="form-control" placeholder="/media/..." />
+              <button type="button" class="btn-upload" data-target="serviceFormPreviewImage" data-accept="image/*">Pilih Gambar</button>
+              <button type="button" class="btn-browse" data-target="serviceFormPreviewImage">Cari</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Link Lynk.id (opsional)</label>
+            <input type="url" id="serviceFormLynkUrl" class="form-control" placeholder="https://lynk.id/..." />
+          </div>
+          <div class="form-group">
+            <label>Deskripsi</label>
+            <textarea id="serviceFormDescription" class="form-control" rows="4"></textarea>
+          </div>
+          <div class="card" style="margin-top:1rem">
+            <div class="card-header"><h3>Form Pertanyaan Pesanan</h3></div>
+            <div class="card-body">
+              <p style="margin-bottom:0.75rem;font-size:0.875rem;opacity:0.7">Tentukan pertanyaan yang akan muncul di form pemesanan untuk jasa ini. Setiap field akan ditampilkan setelah customer mengisi nama & WhatsApp.</p>
+              <div id="formFieldsContainer"></div>
+              <button type="button" class="btn-secondary btn-sm" id="btnAddFormField">+ Tambah Pertanyaan</button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-sm" id="btnSubmitService" style="margin-top:1rem">Simpan Jasa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER DETAIL MODAL -->
+  <div class="modal-overlay" id="orderModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="orderModalTitle">Detail Pesanan</h2>
+        <button class="modal-close" id="orderModalClose">&times;</button>
+      </div>
+      <div class="modal-body" id="orderDetailBody">
+        <p>Memuat...</p>
       </div>
     </div>
   </div>

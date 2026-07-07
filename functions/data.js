@@ -5,13 +5,19 @@ export const handler = async (event) => {
     const octokit = getOctokit()
     const { owner, repo } = getRepo()
 
-    const { data } = await octokit.repos.getContent({
-      owner, repo, path: 'data/products',
-    })
+    // Determine sub-path from request: /data -> products, /data/services -> services
+    const sub = event.path.replace(/^\/data\/?/, '').replace(/\/$/, '') || 'products'
+    const ghPath = sub.startsWith('products') || sub.startsWith('services') ? `data/${sub}` : 'data/products'
 
-    const files = data
-      .filter(item => item.type === 'file' && item.name.endsWith('.json'))
-      .map(item => item.name)
+    let files
+    try {
+      const { data } = await octokit.repos.getContent({ owner, repo, path: ghPath })
+      files = data
+        .filter(item => item.type === 'file' && item.name.endsWith('.json'))
+        .map(item => item.name)
+    } catch {
+      files = []
+    }
 
     return {
       statusCode: 200,

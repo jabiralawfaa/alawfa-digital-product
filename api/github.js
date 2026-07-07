@@ -135,3 +135,42 @@ export async function saveLanding(data) {
     sha,
   })
 }
+
+export async function saveService(serviceData) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `data/services/${serviceData.id}.json`
+  const sha = await getFileSha(path)
+  await octokit.repos.createOrUpdateFileContents({
+    owner, repo, path,
+    message: `save-service: ${serviceData.id}`,
+    content: Buffer.from(JSON.stringify(serviceData, null, 2)).toString('base64'),
+    sha,
+  })
+}
+
+export async function deleteService(serviceId) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `data/services/${serviceId}.json`
+  const sha = await getFileSha(path)
+  if (!sha) return
+  await octokit.repos.deleteFile({
+    owner, repo, path,
+    message: `delete-service: ${serviceId}`,
+    sha,
+  })
+}
+
+export async function saveOrder(orderData) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `data/orders/${orderData.id}.json`
+  const sha = await getFileSha(path)
+  await octokit.repos.createOrUpdateFileContents({
+    owner, repo, path,
+    message: `order: ${orderData.id}`,
+    content: Buffer.from(JSON.stringify(orderData, null, 2)).toString('base64'),
+    sha,
+  })
+}

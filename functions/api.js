@@ -149,6 +149,83 @@ export const handler = async (event) => {
       return json(200, { url: `/media/${safeName}` })
     }
 
+    if (path === 'save-service') {
+      if (method !== 'POST') return json(405, { error: 'Method not allowed' })
+      if (!checkAuth(event)) return unauthorized()
+      const { service } = JSON.parse(event.body || '{}')
+      if (!service || !service.id || !service.title) {
+        return json(400, { error: 'Missing required fields: id, title' })
+      }
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      const sha = await getFileSha(`data/services/${service.id}.json`)
+      await octokit.repos.createOrUpdateFileContents({
+        owner, repo, path: `data/services/${service.id}.json`,
+        message: `save-service: ${service.id}`,
+        content: Buffer.from(JSON.stringify(service, null, 2)).toString('base64'),
+        sha,
+      })
+      return json(200, { ok: true, id: service.id })
+    }
+
+    if (path === 'delete-service') {
+      if (method !== 'POST') return json(405, { error: 'Method not allowed' })
+      if (!checkAuth(event)) return unauthorized()
+      const { serviceId } = JSON.parse(event.body || '{}')
+      if (!serviceId) return json(400, { error: 'serviceId required' })
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      const sha = await getFileSha(`data/services/${serviceId}.json`)
+      if (sha) {
+        await octokit.repos.deleteFile({
+          owner, repo, path: `data/services/${serviceId}.json`,
+          message: `delete-service: ${serviceId}`, sha,
+        })
+      }
+      return json(200, { ok: true })
+    }
+
+    if (path === 'submit-order') {
+      if (method !== 'POST') return json(405, { error: 'Method not allowed' })
+      const { order } = JSON.parse(event.body || '{}')
+      if (!order || !order.serviceId || !order.customerName || !order.customerWa) {
+        return json(400, { error: 'Missing required fields: serviceId, customerName, customerWa' })
+      }
+      order.createdAt = new Date().toISOString()
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      const sha = await getFileSha(`data/orders/${order.id}.json`)
+      await octokit.repos.createOrUpdateFileContents({
+        owner, repo, path: `data/orders/${order.id}.json`,
+        message: `order: ${order.id}`,
+        content: Buffer.from(JSON.stringify(order, null, 2)).toString('base64'),
+        sha,
+      })
+      return json(200, { ok: true, id: order.id })
+    }
+
+    if (path === 'get-orders') {
+      if (method !== 'GET') return json(405, { error: 'Method not allowed' })
+      if (!checkAuth(event)) return unauthorized()
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      try {
+        const { data: items } = await octokit.repos.getContent({ owner, repo, path: 'data/orders' })
+        const orders = []
+        for (const item of items) {
+          if (item.type === 'file' && item.name.endsWith('.json')) {
+            const { data: file } = await octokit.repos.getContent({ owner, repo, path: item.path })
+            const content = JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8'))
+            orders.push(content)
+          }
+        }
+        orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        return json(200, orders)
+      } catch {
+        return json(200, [])
+      }
+    }
+
     return json(404, { error: 'Not found' })
   } catch (err) {
     return json(500, { error: err.message })
