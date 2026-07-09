@@ -1,94 +1,90 @@
 # DESIGN.md
-## Panduan Desain — Showcase Produk Digital
+## Panduan Desain — Al-Awfa Digital Product (Website)
+
+Berdasarkan brand guidelines dari `design-rule.md` (Instagram @jabiralawfaa), diadaptasi untuk website.
 
 ### 1. Prinsip Desain
-- **Sederhana & ramah semua umur**: target dari ibu-ibu sampai remaja, jadi hindari UI yang terlalu "techy". Gunakan ikon + label teks, jangan hanya ikon.
-- **Tombol besar & jelas**: terutama tombol "Kunjungi" — harus jadi elemen paling menonjol di halaman detail.
-- **Mobile-first**: mayoritas pengguna mengakses lewat HP, desain dimulai dari layar kecil lalu melebar ke desktop.
-- **Konsisten**: warna, jarak (spacing), dan tipografi mengikuti sistem yang sama di semua halaman.
+- **Sederhana, hangat, & premium**: target dari ibu-ibu sampai remaja. Hindari UI yang terlalu "techy".
+- **Tombol besar & jelas**: CTA utama harus paling menonjol.
+- **Mobile-first**: mayoritas via HP, desain dimulai dari layar kecil lalu melebar.
+- **Konsisten dengan brand Instagram**: warna palet mengikuti identitas visual @jabiralawfaa.
 
 ### 2. Palet Warna
 
 | Nama | Hex | Peran |
 |---|---|---|
-| Teal Cerah | `#08D9D6` | Warna aksen utama — tombol CTA "Kunjungi", link aktif, highlight |
-| Gelap Netral | `#252A34` | Warna teks utama, background header/footer/dashboard (dark) |
-| Merah Pink (Coral) | `#FF2E63` | Warna aksen sekunder — badge "Baru", notifikasi, hover state, statistik penting |
-| Putih Keabu-abuan | `#EAEAEA` | Background utama halaman (light), kartu produk, area konten |
+| Cream Milk | `#FBF5DD` | Background utama halaman (public & admin) — bersih, lembut, premium |
+| Soft Sage | `#E7E1B1` | Background sekunder — kartu produk, card, section divider |
+| Fresh Green | `#306D29` | Warna aksen utama — tombol CTA, link, icon aktif, highlight |
+| Deep Forest | `#0D530E` | Teks utama, judul, border, ikon — kontras tinggi, profesional |
 
 **Aturan pemakaian:**
-- Background halaman publik: `#EAEAEA` dengan teks `#252A34`.
-- Header/Navbar & Footer: background `#252A34`, teks/logo `#EAEAEA`, link aktif `#08D9D6`.
-- Tombol utama (Primary CTA — "Kunjungi"): background `#08D9D6`, teks `#252A34` (kontras tinggi), hover → `#FF2E63` dengan teks putih.
-- Tombol sekunder / badge kategori: outline `#08D9D6` atau solid `#FF2E63` untuk badge "Trending"/"Baru".
-- Dashboard admin: tema lebih gelap (`#252A34` sebagai sidebar), kartu statistik putih (`#EAEAEA`) dengan angka besar warna `#08D9D6` (views) dan `#FF2E63` (clicks) agar mudah dibedakan sekilas.
-- Jangan menggabungkan `#FF2E63` dan `#08D9D6` bersisian dalam blok besar (silau) — gunakan salah satu sebagai dominan, satu sebagai aksen kecil.
+- Background halaman publik: `#FBF5DD`. Teks utama: `#0D530E`.
+- Kartu produk / card: background `#E7E1B1`, teks `#0D530E`.
+- Tombol utama (Primary CTA): background `#306D29`, teks putih (`#FFFFFF`), hover → turunkan brightness atau beri shadow.
+- Badge / label kategori: background `#306D29` dengan teks putih, atau outline `#306D29`.
+- Header/Navbar: background `#0D530E` (solid, gelap), teks/logo putih, link aktif `#FBF5DD`.
+- Dashboard admin: sidebar `#0D530E`, konten `#FBF5DD`, card `#E7E1B1`.
+- **Kontras wajib**: teks `#0D530E` di atas `#FBF5DD` atau `#E7E1B1`. Jangan pernah letakkan teks hijau di atas background hijau.
+- **Hindari penggunaan warna di luar palet** (merah menyala, biru dongker, ungu, neon).
 
 ### 3. Tipografi
-- Font sans-serif yang ramah dibaca: contoh `Inter`, `Poppins`, atau `Nunito` (bulat, terasa hangat, cocok untuk semua umur).
-- Heading: bold, ukuran besar (h1 ~32–40px di desktop, ~24–28px di mobile).
-- Body text: minimal 16px agar nyaman dibaca oleh segala usia (termasuk ibu-ibu yang mungkin kurang familiar layar kecil).
-- Hindari font dekoratif/script untuk teks penting — boleh dipakai kecil untuk logo/tagline saja.
+- Font utama: **Inter** (Google Fonts) — sans-serif, bersih, mudah dibaca semua umur.
+- Heading: Bold, warna `#0D530E`. Ukuran besar (h1 ~32–40px desktop, ~24–28px mobile).
+- Body text: minimal 16px, warna `#0D530E` dengan opacity 85% untuk teks sekunder.
+- Link / CTA: warna `#306D29`, bold.
+- Hindari font dekoratif/script untuk teks penting.
 
 ### 4. Layout & Komponen
 
-#### 4.1 Halaman Katalog (Public Home)
+#### 4.1 Halaman Utama (Landing Page)
 ```
-<header>  → Logo + nav (Beranda, Kategori, Tentang)
+<header class="navbar">  → Logo + nav (Beranda, Tentang, Katalog, Jasa, Kontak)
 <main>
-  <section class="hero">  → judul singkat + tagline
-  <section class="catalog">
-     <article class="product-card">  → diulang per produk
-        foto preview | judul | badge kategori | harga (opsional)
-  </section>
-<footer>  → kontak, sosial media, copyright
+  <section class="hero">  → judul + tagline, background #0D530E solid atau gradasi gelap
+  <section class="about">  → kartu tentang (bg #E7E1B1)
+  <section class="catalog">  → grid produk (card bg #E7E1B1)
+  <section class="services">  → grid jasa (card bg #E7E1B1)
+  <section class="contact">  → form kontak
+<footer>  → background #0D530E, teks putih
 ```
-- `product-card` berbentuk grid responsif: 1 kolom (mobile) → 2 kolom (tablet) → 3–4 kolom (desktop).
-- Setiap card punya efek hover ringan (scale/shadow) memakai aksen `#08D9D6`.
+- `product-card` / `service-card`: background `#E7E1B1`, border-radius 12px, hover shadow hijau.
+- Grid: 1 kolom (mobile) → 2 kolom (tablet) → 3 kolom (desktop).
 
 #### 4.2 Halaman Detail Produk
 ```
 <main>
   <article class="product-detail">
-    <figure>  → galeri foto/video (carousel sederhana)
-    <header>  → judul produk + kategori
-    <section class="description">  → teks deskripsi (mendukung paragraf, list)
-    <a class="btn-cta" href="{link_lynk}" target="_blank">Kunjungi</a>
+    <figure>  → foto/video preview
+    <header>  → judul + kategori + harga
+    <section class="description">  → deskripsi kaya HTML
+    <a class="btn-cta" href="{lynk}" target="_blank">Kunjungi</a>
 ```
-- Tombol CTA full-width di mobile, fixed di bagian bawah layar (sticky) agar selalu terlihat tanpa scroll.
-- Saat halaman dibuka → trigger pencatatan **view** (sekali per page load).
-- Saat tombol diklik → trigger pencatatan **click**, baru redirect ke link Lynk.id.
+- Tombol CTA: background `#306D29` → hover `#0D530E`, teks putih.
+- Fixed di bottom mobile, static center di desktop.
 
 #### 4.3 Dashboard Admin
 ```
-<aside class="sidebar">  → menu: Overview, Produk, Tambah Produk, Logout
-<main class="dashboard-content">
-  <section class="stats-overview">
-     kartu: Total Produk | Total Views | Total Clicks | CTR rata-rata
-  <section class="product-table">
-     tabel: Foto | Judul | Views | Clicks | CTR | Aksi (Edit/Hapus)
-  <section class="charts">
-     grafik batang sederhana (views vs clicks per produk, 7/30 hari terakhir)
+<aside class="sidebar">  → background #0D530E
+<main class="dashboard-content">  → background #FBF5DD
+  kartu statistik, tabel produk, form modal
 ```
-- Form "Tambah Produk Baru" sebagai modal atau halaman terpisah:
-  - Upload foto preview (drag & drop + preview thumbnail sebelum submit).
-  - Input: Judul, Kategori, Link Lynk.id, Harga (opsional).
-  - Editor deskripsi (textarea / rich text ringan, mendukung markdown).
-  - Upload media tambahan (multi-file: gambar & video) untuk galeri detail.
-  - Tombol "Simpan Produk" — warna `#08D9D6`, loading state saat menyimpan ke GitHub repo.
+- Sidebar: `#0D530E`, link aktif `#FBF5DD`.
+- Tombol aksi: Edit (`#306D29`), Hapus (`#0D530E` dengan opacity).
+- Modal: background `#FBF5DD`, border `#E7E1B1`.
 
 ### 5. Semantic HTML Checklist
-Gunakan elemen sesuai makna, bukan `<div>` semua:
 - `<header>`, `<nav>`, `<main>`, `<section>`, `<article>`, `<aside>`, `<footer>`
-- `<figure>` + `<figcaption>` untuk gambar/video produk
-- `<button>` untuk aksi (bukan `<div onclick>`), `<a>` khusus untuk navigasi/link keluar
-- `<form>`, `<label>`, `<fieldset>` pada form dashboard agar accessible (screen reader friendly)
-- Atribut `alt` wajib di semua gambar produk
+- `<figure>` + `<figcaption>` untuk media produk
+- `<button>` untuk aksi, `<a>` untuk navigasi/link keluar
+- `<form>`, `<label>`, `<fieldset>` untuk form
+- Atribut `alt` wajib di semua gambar
 
-### 6. Aksesibilitas & Mobile
-- Ukuran tombol minimal 44x44px (mudah disentuh).
-- Kontras teks vs background memenuhi standar WCAG AA (cek `#252A34` di atas `#EAEAEA` — aman; `#08D9D6` untuk teks kecil di atas putih kurang kontras, jadi pakai untuk elemen besar/ikon saja).
-- Hindari teks di atas `#FF2E63` polos tanpa outline gelap — gunakan teks putih (`#EAEAEA`) di atasnya.
+### 6. Aksesibilitas
+- Ukuran tombol minimal 44x44px.
+- Kontras `#0D530E` di atas `#FBF5DD` — aman WCAG AA.
+- Jangan letakkan teks di atas `#306D29` tanpa kontras cukup.
+- White space minimal 30% tiap halaman.
 
 ### 7. Tone Visual
-Ceria, bersih, terpercaya — seperti etalase toko online modern (terinspirasi gaya marketplace lokal) namun tetap minimalis agar tidak membingungkan pengguna awam.
+Hangat, alami, terpercaya — seperti toko online yang nyaman dikunjungi semua kalangan. Warna krem/hijau memberikan kesan organik, tumbuh, dan profesional.

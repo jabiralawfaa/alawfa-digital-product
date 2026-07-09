@@ -86,20 +86,19 @@
   flex: 1;
   padding: 1rem;
   background: var(--teal);
-  color: var(--dark) !important;
+  color: var(--white) !important;
   font-size: 1.125rem;
   font-weight: 700;
   text-align: center;
   border-radius: var(--radius);
-  transition: background var(--transition), color var(--transition);
+  transition: background var(--transition);
   border: none;
   cursor: pointer;
   text-decoration: none;
 }
 
 .btn-cta:hover {
-  background: var(--coral);
-  color: var(--white) !important;
+  background: var(--dark);
 }
 
 .btn-share {

@@ -6,14 +6,14 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  color: var(--white);
+  color: var(--light);
   overflow: hidden;
 }
 
 .hero-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, var(--dark) 0%, #1a1e26 50%, #0f1217 100%);
+  background: linear-gradient(135deg, var(--dark) 0%, #0a3a0a 50%, #062406 100%);
   z-index: 0;
 }
 
@@ -21,8 +21,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 30% 50%, rgba(8, 217, 214, 0.15) 0%, transparent 60%),
-              radial-gradient(ellipse at 70% 50%, rgba(255, 46, 99, 0.1) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 30% 50%, rgba(48, 109, 41, 0.25) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(11, 83, 14, 0.15) 0%, transparent 60%);
 }
 
 .hero-content {
@@ -48,21 +48,20 @@
 .btn-primary {
   display: inline-block;
   background: var(--teal);
-  color: var(--dark) !important;
+  color: var(--white) !important;
   font-weight: 700;
   font-size: 1.0625rem;
   padding: 0.875rem 2.5rem;
   border-radius: var(--radius);
   border: none;
-  transition: background var(--transition), color var(--transition), transform var(--transition);
+  transition: background var(--transition), transform var(--transition);
   min-width: 44px;
   min-height: 44px;
   line-height: 1;
 }
 
 .btn-primary:hover {
-  background: var(--coral);
-  color: var(--white) !important;
+  background: var(--dark);
   transform: translateY(-2px);
 }
 
@@ -118,7 +117,7 @@
   height: 56px;
   border-radius: 50%;
   background: var(--teal);
-  color: var(--dark);
+  color: var(--white);
   margin-bottom: 1rem;
 }
 
@@ -156,7 +155,7 @@
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(8, 217, 214, 0.2);
+  box-shadow: 0 8px 24px rgba(48, 109, 41, 0.25);
 }
 
 .product-card-image {

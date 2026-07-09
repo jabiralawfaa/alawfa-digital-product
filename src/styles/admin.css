@@ -55,9 +55,9 @@
 
 .sidebar-nav a:hover,
 .sidebar-nav a.active {
-  background: rgba(8, 217, 214, 0.1);
-  border-color: var(--teal);
-  color: var(--teal);
+  background: rgba(48, 109, 41, 0.15);
+  border-color: var(--light);
+  color: var(--light);
 }
 
 .logout-link {
@@ -252,7 +252,7 @@
 
 .btn-edit {
   background: var(--teal);
-  color: var(--dark);
+  color: var(--white);
   margin-right: 0.375rem;
 }
 

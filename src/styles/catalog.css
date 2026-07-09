@@ -28,7 +28,7 @@
 }
 
 .product-card {
-  background: var(--white);
+  background: var(--bg-card);
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -38,7 +38,7 @@
 
 .product-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(8, 217, 214, 0.2);
+  box-shadow: 0 8px 24px rgba(48, 109, 41, 0.25);
 }
 
 .product-card-image {
