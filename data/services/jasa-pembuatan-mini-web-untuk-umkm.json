@@ -1,0 +1,47 @@
+{
+  "id": "jasa-pembuatan-mini-web-untuk-umkm",
+  "title": "Jasa pembuatan Mini Web untuk UMKM",
+  "priceMin": "250000",
+  "priceMax": "2000000",
+  "previewImage": "/media/ChatGPT_Image_9_Jul_2026__20.53.57.png",
+  "lynkUrl": "",
+  "description": "",
+  "formFields": [
+    {
+      "id": "field_1783605459097_xq15",
+      "label": "Apa Jenis Usaha UMKM Anda?",
+      "type": "text",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "field_1783605459097_rsv1",
+      "label": "Apa nama Usaha UMKM Anda?",
+      "type": "text",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "field_1783605459097_rjpi",
+      "label": "Seberapa besar Usaha UMKM Anda?",
+      "type": "textarea",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "field_1783605459097_39tb",
+      "label": "Apakah Usaha anda sangat membutuhkan website UMKM?",
+      "type": "text",
+      "required": true,
+      "options": []
+    },
+    {
+      "id": "field_1783605459097_xmzc",
+      "label": "Tolong Isikan Nomor Telepon yang bisa kami hubungi untuk informasi lebih lanjut",
+      "type": "text",
+      "required": true,
+      "options": []
+    }
+  ],
+  "createdAt": "2026-07-09T13:57:39.106Z"
+}
