@@ -6,9 +6,10 @@
   <title>Al-Awfa Digital Product — Produk Digital Terbaik</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/base.css" />
   <link rel="stylesheet" href="/styles/landing.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <nav class="navbar" id="navbar">
@@ -33,112 +34,374 @@
   <main>
     <section class="hero" id="hero">
       <div class="hero-bg"></div>
-      <div class="hero-content container">
-        <h1>Temukan Produk Digital Terbaik</h1>
-        <p>Ebook, template, kelas online, dan lainnya — dari kreator Indonesia untuk kamu.</p>
-        <a href="#catalog" class="btn-primary">Lihat Katalog</a>
+
+      <div class="hero-particles" aria-hidden="true">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+      </div>
+
+      <div class="corner corner--tl" aria-hidden="true"></div>
+      <div class="corner corner--br" aria-hidden="true"></div>
+
+      <div class="hero-jumbotron">
+        <div class="hero-line" aria-hidden="true"></div>
+
+        <div class="hero-headline">
+          <h1>
+            <span class="hero-word">Temukan</span>&nbsp;
+            <span class="hero-word">Produk</span>&nbsp;
+            <span class="hero-word">Digital</span><br>
+            <span class="hero-word">Yang</span>&nbsp;
+            <span class="hero-word hero-word--accent">Terbaik</span>
+          </h1>
+        </div>
+
+        <div class="hero-desc">
+          <p>Ebook, template, kelas online, dan lainnya — dari kreator Indonesia untuk kamu.</p>
+        </div>
+
+        <div class="hero-cta">
+          <a href="#catalog" class="hero-btn">Lihat Katalog</a>
+        </div>
+      </div>
+
+      <div class="scroll-hint" aria-hidden="true">
+        <div class="mouse"></div>
+        <span>Scroll</span>
       </div>
     </section>
 
     <section class="about" id="about">
-      <div class="container">
-        <h2 class="section-title">Tentang Kami</h2>
-        <div class="about-grid">
-          <div class="about-card">
-            <div class="about-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            </div>
-            <h3>Produk Digital</h3>
-            <p>Kumpulan ebook, template, dan kelas online berkualitas yang siap membantu kamu belajar & berkembang.</p>
-          </div>
-          <div class="about-card">
-            <div class="about-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <h3>Mudah & Aman</h3>
-            <p>Klik "Kunjungi", langsung diarahkan ke halaman pembelian di Lynk.id — cepat, aman, tanpa ribet.</p>
-          </div>
-          <div class="about-card">
-            <div class="about-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            </div>
-            <h3>Komunitas</h3>
-            <p>Bergabung dengan ribuan pembeli yang sudah merasakan manfaat produk digital dari para kreator terbaik.</p>
-          </div>
+      <div class="about-grid-bg" aria-hidden="true"></div>
+
+      <div class="about-header">
+        <div class="about-label" data-animate>
+          <div class="about-line" aria-hidden="true"></div>
+          <span>Tentang Kami</span>
         </div>
+        <h2 class="about-title" id="about-heading" data-animate>
+          Platform Digital <span class="about-highlight">Terbaik</span> Untuk Kamu
+        </h2>
+        <p class="about-subtitle" data-animate>
+          Menampilkan produk digital terbaik dari kreator Indonesia — ebook, template, kelas online, dan lainnya.
+        </p>
       </div>
+
+      <div class="about-cards">
+        <article class="about-card" data-animate>
+          <div class="about-card-number" aria-hidden="true">01</div>
+          <div class="about-card-icon">
+            <i class="fa-solid fa-file-lines" aria-hidden="true"></i>
+          </div>
+          <h3 class="about-card-title">Produk Digital</h3>
+          <p class="about-card-desc">Kumpulan ebook, template, dan kelas online berkualitas yang siap membantu kamu belajar & berkembang.</p>
+          <div class="about-card-tags">
+            <span>Ebook</span>
+            <span>Template</span>
+            <span>Kelas Online</span>
+          </div>
+        </article>
+
+        <article class="about-card" data-animate>
+          <div class="about-card-number" aria-hidden="true">02</div>
+          <div class="about-card-icon">
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+          </div>
+          <h3 class="about-card-title">Mudah & Aman</h3>
+          <p class="about-card-desc">Klik "Kunjungi", langsung diarahkan ke halaman pembelian di Lynk.id — cepat, aman, tanpa ribet.</p>
+          <div class="about-card-tags">
+            <span>Lynk.id</span>
+            <span>Pembayaran</span>
+            <span>Terpercaya</span>
+          </div>
+        </article>
+
+        <article class="about-card" data-animate>
+          <div class="about-card-number" aria-hidden="true">03</div>
+          <div class="about-card-icon">
+            <i class="fa-solid fa-users" aria-hidden="true"></i>
+          </div>
+          <h3 class="about-card-title">Komunitas</h3>
+          <p class="about-card-desc">Bergabung dengan ribuan pembeli yang sudah merasakan manfaat produk digital dari para kreator terbaik.</p>
+          <div class="about-card-tags">
+            <span>Kreator</span>
+            <span>Pembeli</span>
+            <span>Terpercaya</span>
+          </div>
+        </article>
+      </div>
+
     </section>
 
     <section class="catalog" id="catalog">
-      <div class="container">
-        <h2 class="section-title">Katalog Produk</h2>
-        <p class="section-subtitle">Jelajahi koleksi produk digital pilihan kami.</p>
-        <div class="catalog-grid" id="productGrid">
-          <p class="loading-text">Memuat produk...</p>
+      <div class="catalog-glow" aria-hidden="true"></div>
+      <div class="catalog-dots" aria-hidden="true"></div>
+
+      <div class="catalog-header">
+        <div class="catalog-header-left" data-animate>
+          <div class="catalog-label">
+            <div class="catalog-label-line" aria-hidden="true"></div>
+            <span>Koleksi Produk</span>
+          </div>
+          <h2 class="catalog-title" id="catalog-heading">
+            Katalog <span class="catalog-highlight">Produk</span> Kami
+          </h2>
         </div>
+      </div>
+
+      <div class="catalog-grid" id="productGrid">
+        <p class="loading-text">Memuat produk...</p>
       </div>
     </section>
 
     <section class="services" id="services">
-      <div class="container">
-        <h2 class="section-title">Layanan Jasa</h2>
-        <p class="section-subtitle">Kami juga menerima pembuatan berbagai kebutuhan digital Anda.</p>
-        <div class="services-grid" id="serviceGrid">
-          <p class="loading-text">Memuat jasa...</p>
+      <div class="services-glow" aria-hidden="true"></div>
+      <div class="services-dots" aria-hidden="true"></div>
+
+      <div class="services-header">
+        <div class="services-header-left" data-animate>
+          <div class="services-label">
+            <div class="services-label-line" aria-hidden="true"></div>
+            <span>Layanan Jasa</span>
+          </div>
+          <h2 class="services-title" id="services-heading">
+            Jasa <span class="services-highlight">Kreatif</span> Digital
+          </h2>
         </div>
       </div>
-    </section>
 
-    <section class="contact" id="contact">
-      <div class="container">
-        <h2 class="section-title">Hubungi Kami</h2>
-        <p class="section-subtitle">Punya pertanyaan atau ingin kerja sama? Silakan hubungi kami.</p>
-        <form class="contact-form" id="contactForm">
-          <div class="form-group">
-            <label for="name">Nama</label>
-            <input type="text" id="name" name="name" required />
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required />
-          </div>
-          <div class="form-group">
-            <label for="message">Pesan</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
-          </div>
-          <button type="submit" class="btn-primary btn-submit">Kirim Pesan</button>
-        </form>
+      <div class="services-grid" id="serviceGrid">
+        <p class="loading-text">Memuat jasa...</p>
       </div>
     </section>
+
+    <section class="contact-section" id="contact" aria-labelledby="contact-heading">
+
+      <div class="contact-glow-left" aria-hidden="true"></div>
+      <div class="contact-glow-right" aria-hidden="true"></div>
+      <div class="contact-noise" aria-hidden="true"></div>
+
+      <div class="contact-layout">
+
+        <!-- === KOLOM KIRI: Info === -->
+        <div class="contact-info" data-animate>
+          <div class="contact-label">
+            <div class="contact-label-line" aria-hidden="true"></div>
+            <span>Hubungi Kami</span>
+          </div>
+
+          <h2 class="contact-title" id="contact-heading">
+            Mari <span class="contact-highlight">Bicara</span><br>Tentang Proyek Anda
+          </h2>
+
+          <p class="contact-desc">
+            Punya ide yang ingin diwujudkan? Kami siap mendengarkan dan membantu Anda mengubah visi menjadi kenyataan digital yang luar biasa.
+          </p>
+
+          <div class="contact-details">
+            <div class="contact-detail-item" data-animate>
+              <div class="detail-icon">
+                <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+              </div>
+              <div class="detail-text">
+                <span class="detail-label">Email</span>
+                <span class="detail-value"><a href="mailto:hello@lynkshowcase.com">hello@lynkshowcase.com</a></span>
+              </div>
+            </div>
+
+            <div class="contact-detail-item" data-animate>
+              <div class="detail-icon">
+                <i class="fa-solid fa-phone" aria-hidden="true"></i>
+              </div>
+              <div class="detail-text">
+                <span class="detail-label">Telepon</span>
+                <span class="detail-value"><a href="tel:+6281234567890">+62 812-3456-7890</a></span>
+              </div>
+            </div>
+
+            <div class="contact-detail-item" data-animate>
+              <div class="detail-icon">
+                <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+              </div>
+              <div class="detail-text">
+                <span class="detail-label">Lokasi</span>
+                <span class="detail-value">Jakarta Selatan, Indonesia</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- === KOLOM KANAN: Form === -->
+        <div class="contact-form-wrap" data-animate>
+          <div class="contact-form-card" id="form-card">
+
+            <!-- Form -->
+            <form id="contactForm" novalidate>
+              <h3 class="form-heading">Kirim Pesan</h3>
+              <p class="form-subheading">Isi formulir di bawah dan kami akan merespons dalam 24 jam.</p>
+
+              <!-- Nama -->
+              <div class="form-group" id="group-name">
+                <label class="form-label" for="input-name">Nama Lengkap</label>
+                <input type="text" id="input-name" class="form-input" placeholder="Masukkan nama Anda" autocomplete="name" maxlength="60" required>
+                <div class="form-error">
+                  <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  <span>Nama wajib diisi</span>
+                </div>
+              </div>
+
+              <!-- Email -->
+              <div class="form-group" id="group-email">
+                <label class="form-label" for="input-email">Alamat Email</label>
+                <input type="email" id="input-email" class="form-input" placeholder="nama@email.com" autocomplete="email" maxlength="100" required>
+                <div class="form-error">
+                  <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  <span>Masukkan alamat email yang valid</span>
+                </div>
+              </div>
+
+              <!-- Pesan -->
+              <div class="form-group" id="group-message">
+                <label class="form-label" for="input-message">Pesan</label>
+                <textarea id="input-message" class="form-textarea" placeholder="Ceritakan tentang proyek atau ide Anda..." maxlength="500" required></textarea>
+                <span class="char-counter" id="char-counter" aria-live="polite">0 / 500</span>
+                <div class="form-error">
+                  <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+                  <span>Pesan wajib diisi (minimal 10 karakter)</span>
+                </div>
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="submit-btn" id="submit-btn">
+                <span class="btn-text">Kirim Pesan</span>
+                <i class="fa-solid fa-arrow-right btn-arrow" aria-hidden="true"></i>
+                <div class="btn-spinner" aria-hidden="true"></div>
+              </button>
+            </form>
+
+            <!-- Success State -->
+            <div class="form-success-msg" id="success-msg">
+              <div class="success-icon">
+                <i class="fa-solid fa-check" aria-hidden="true"></i>
+              </div>
+              <h3 class="success-title">Pesan Terkirim</h3>
+              <p class="success-desc">Terima kasih telah menghubungi kami. Tim kami akan membalas pesan Anda dalam waktu 24 jam kerja.</p>
+              <button type="button" class="reset-btn" id="reset-btn">
+                <i class="fa-solid fa-rotate-left" aria-hidden="true"></i>
+                Kirim Pesan Lagi
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Toast -->
+    <div class="toast-container" id="toast-container" aria-live="polite"></div>
   </main>
 
-  <footer class="footer" id="footer">
-    <div class="container footer-inner">
-      <div class="footer-col">
-        <h4>Al-Awfa Digital Product</h4>
-        <p>Menampilkan produk digital terbaik dari kreator Indonesia.</p>
+  <footer class="footer" id="footer" role="contentinfo">
+
+    <div class="footer-glow" aria-hidden="true"></div>
+    <div class="footer-dots" aria-hidden="true"></div>
+
+    <!-- === MAIN CONTENT === -->
+    <div class="footer-main">
+
+      <!-- Kolom 1: Brand -->
+      <div class="footer-brand" data-animate>
+        <div class="brand-logo">
+          <div class="logo-mark" aria-hidden="true">A</div>
+          <span class="logo-text">Al-Awfa Digital</span>
+        </div>
+        <p class="brand-desc">
+          Menampilkan produk digital terbaik dari kreator Indonesia — ebook, template, kelas online, dan lainnya.
+        </p>
+        <div class="social-links" aria-label="Media sosial">
+          <a href="#" class="social-link" aria-label="Instagram">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="X (Twitter)">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+          </a>
+          <a href="#" class="social-link" aria-label="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+        </div>
       </div>
-      <div class="footer-col">
-        <h4>Navigasi</h4>
-        <ul>
+
+      <!-- Kolom 2: Navigasi -->
+      <nav class="footer-nav" data-animate aria-label="Navigasi utama">
+        <h4 class="footer-col-title">Navigasi</h4>
+        <ul class="footer-links">
           <li><a href="#hero">Beranda</a></li>
-          <li><a href="#about">Tentang</a></li>
-          <li><a href="#catalog">Katalog</a></li>
-          <li><a href="#services">Jasa</a></li>
-          <li><a href="#contact">Kontak</a></li>
+          <li><a href="#about">Tentang Kami</a></li>
+          <li><a href="#catalog">Katalog Produk</a></li>
+          <li><a href="#services">Layanan Jasa</a></li>
+          <li><a href="#contact">Hubungi Kami</a></li>
+        </ul>
+      </nav>
+
+      <!-- Kolom 3: Layanan -->
+      <div class="footer-services" data-animate>
+        <h4 class="footer-col-title">Layanan</h4>
+        <ul class="footer-links">
+          <li><a href="#services">Desain Grafis</a></li>
+          <li><a href="#services">Pengembangan Web</a></li>
+          <li><a href="#services">Penulisan Konten</a></li>
+          <li><a href="#services">Administrasi</a></li>
         </ul>
       </div>
-      <div class="footer-col">
-        <h4>Kontak</h4>
-        <ul>
-          <li><a href="mailto:hello@lynkshowcase.com">hello@lynkshowcase.com</a></li>
-          <li><a href="https://lynk.id/namauser" target="_blank" rel="noopener">Lynk.id</a></li>
-        </ul>
+
+      <!-- Kolom 4: Newsletter -->
+      <div class="footer-newsletter" data-animate>
+        <h4 class="footer-col-title">Tetap Terhubung</h4>
+        <p class="newsletter-desc">
+          Dapatkan update terbaru tentang produk dan layanan kami langsung di inbox Anda.
+        </p>
+        <form class="newsletter-form" id="newsletter-form" novalidate>
+          <input
+            type="email"
+            class="newsletter-input"
+            placeholder="alamat@email.com"
+            aria-label="Alamat email untuk newsletter"
+            autocomplete="email"
+            required
+          >
+          <button type="submit" class="newsletter-btn" aria-label="Berlangganan newsletter">
+            Kirim <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
+          </button>
+        </form>
+        <p class="newsletter-note">Privasi terjaga. Berhenti kapan saja.</p>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2026 Al-Awfa Digital Product. All rights reserved.</p>
+
+    </div>
+
+    <!-- === BOTTOM BAR === -->
+    <div class="footer-bottom">
+      <div class="footer-bottom-inner" data-animate>
+        <p class="copyright">
+          &copy; 2026 <strong>Al-Awfa Digital Product</strong>. Seluruh hak cipta dilindungi.
+        </p>
+        <div class="bottom-links">
+          <a href="#">Kebijakan Privasi</a>
+          <a href="#">Syarat & Ketentuan</a>
+        </div>
+        <button class="back-to-top" id="back-to-top" aria-label="Kembali ke atas">
+          <i class="fa-solid fa-arrow-up"></i>
+        </button>
       </div>
     </div>
+
   </footer>
 
   <!-- ORDER MODAL -->

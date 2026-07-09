@@ -29,7 +29,7 @@ Berdasarkan brand guidelines dari `design-rule.md` (Instagram @jabiralawfaa), di
 - **Hindari penggunaan warna di luar palet** (merah menyala, biru dongker, ungu, neon).
 
 ### 3. Tipografi
-- Font utama: **Inter** (Google Fonts) — sans-serif, bersih, mudah dibaca semua umur.
+- Font utama: **Poppins** (Google Fonts) — sans-serif, bulat, hangat, cocok untuk semua umur.
 - Heading: Bold, warna `#0D530E`. Ukuran besar (h1 ~32–40px desktop, ~24–28px mobile).
 - Body text: minimal 16px, warna `#0D530E` dengan opacity 85% untuk teks sekunder.
 - Link / CTA: warna `#306D29`, bold.

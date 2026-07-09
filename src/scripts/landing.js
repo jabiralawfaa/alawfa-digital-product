@@ -1,3 +1,40 @@
+// ============ SCROLL ANIMATIONS (IntersectionObserver) ============
+const animObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible')
+        animObserver.unobserve(entry.target)
+      }
+    })
+  },
+  { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+)
+
+document.querySelectorAll('[data-animate]').forEach((el) => {
+  animObserver.observe(el)
+})
+
+// ============ CARD PARALLAX TILT ============
+if (window.matchMedia('(min-width: 901px)').matches && !window.matchMedia('(pointer: coarse)').matches) {
+  const cards = document.querySelectorAll('.about-card')
+  cards.forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      const centerX = rect.width / 2
+      const centerY = rect.height / 2
+      const rotateX = ((y - centerY) / centerY) * -3
+      const rotateY = ((x - centerX) / centerX) * 3
+      card.style.transform = `translateY(-6px) perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`
+    })
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = ''
+    })
+  })
+}
+
 const API_BASE = '/data/products';
 
 function formatPrice(price) {
@@ -52,16 +89,17 @@ async function loadProducts() {
       return;
     }
 
-    grid.innerHTML = products.map(product => `
-      <article class="product-card" data-id="${product.id}">
-        <img
-          class="product-card-image"
-          src="${product.previewImage || '/placeholder.svg'}"
-          alt="${product.title}"
-          loading="lazy"
-        />
+    grid.innerHTML = products.map((product, i) => `
+      <article class="product-card" data-id="${product.id}" data-animate>
+        <div class="product-card-image">
+          <img
+            src="${product.previewImage || '/placeholder.svg'}"
+            alt="${product.title}"
+            loading="lazy"
+          />
+        </div>
         <div class="product-card-body">
-          <span class="product-card-category">${product.category}</span>
+          <p class="product-card-category">${product.category || ''}</p>
           <h2 class="product-card-title">${product.title}</h2>
           ${product.price ? `<p class="product-card-price">${formatPrice(product.price)}</p>` : ''}
         </div>
@@ -73,6 +111,9 @@ async function loadProducts() {
         window.location.href = `/detail.html?id=${card.dataset.id}`;
       });
     });
+
+    // Observe animated elements
+    grid.querySelectorAll('[data-animate]').forEach(el => animObserver.observe(el));
 
   } catch (err) {
     grid.innerHTML = '<p class="loading-text">Gagal memuat produk. Coba lagi nanti.</p>';
@@ -103,13 +144,14 @@ async function loadServices() {
     }
 
     grid.innerHTML = services.map(s => `
-      <article class="service-card" data-id="${s.id}">
-        <img
-          class="service-card-image"
-          src="${s.previewImage || '/placeholder.svg'}"
-          alt="${s.title}"
-          loading="lazy"
-        />
+      <article class="service-card" data-id="${s.id}" data-animate>
+        <div class="service-card-image">
+          <img
+            src="${s.previewImage || '/placeholder.svg'}"
+            alt="${s.title}"
+            loading="lazy"
+          />
+        </div>
         <div class="service-card-body">
           <h3 class="service-card-title">${s.title}</h3>
           ${s.priceMin || s.priceMax ? `<p class="service-card-price">${s.priceMin ? formatPrice(s.priceMin) : ''}${s.priceMin && s.priceMax ? ' - ' : ''}${s.priceMax ? formatPrice(s.priceMax) : ''}</p>` : ''}
@@ -124,6 +166,8 @@ async function loadServices() {
         if (service) openOrderModal(service)
       })
     })
+
+    grid.querySelectorAll('[data-animate]').forEach(el => animObserver.observe(el))
 
   } catch {
     grid.innerHTML = ''
@@ -252,16 +296,169 @@ orderForm.addEventListener('submit', async (e) => {
 // ============ CONTACT FORM ============
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-  contactForm.addEventListener('submit', e => {
+  const formCard = document.getElementById('form-card');
+  const successMsg = document.getElementById('success-msg');
+  const resetBtn = document.getElementById('reset-btn');
+  const submitBtn = document.getElementById('submit-btn');
+
+  const inputName = document.getElementById('input-name');
+  const inputEmail = document.getElementById('input-email');
+  const inputMessage = document.getElementById('input-message');
+  const charCounter = document.getElementById('char-counter');
+
+  const groupName = document.getElementById('group-name');
+  const groupEmail = document.getElementById('group-email');
+  const groupMessage = document.getElementById('group-message');
+
+  // Focus / blur — label style
+  ;[inputName, inputEmail, inputMessage].forEach((input) => {
+    const group = input.closest('.form-group');
+    input.addEventListener('focus', () => {
+      group.classList.add('focused');
+      group.classList.remove('error');
+    });
+    input.addEventListener('blur', () => {
+      group.classList.remove('focused');
+    });
+  });
+
+  // Character counter
+  inputMessage.addEventListener('input', () => {
+    const len = inputMessage.value.length;
+    charCounter.textContent = `${len} / 500`;
+    charCounter.classList.remove('warn', 'over');
+    if (len >= 500) {
+      charCounter.classList.add('over');
+    } else if (len >= 400) {
+      charCounter.classList.add('warn');
+    }
+  });
+
+  function validateName() {
+    const val = inputName.value.trim();
+    if (!val) {
+      groupName.classList.add('error');
+      return false;
+    }
+    groupName.classList.remove('error');
+    return true;
+  }
+
+  function validateEmail() {
+    const val = inputEmail.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!val || !emailRegex.test(val)) {
+      groupEmail.classList.add('error');
+      return false;
+    }
+    groupEmail.classList.remove('error');
+    return true;
+  }
+
+  function validateMessage() {
+    const val = inputMessage.value.trim();
+    if (!val || val.length < 10) {
+      groupMessage.classList.add('error');
+      return false;
+    }
+    groupMessage.classList.remove('error');
+    return true;
+  }
+
+  // Real-time validation after first error
+  inputName.addEventListener('input', () => {
+    if (groupName.classList.contains('error')) validateName();
+  });
+  inputEmail.addEventListener('input', () => {
+    if (groupEmail.classList.contains('error')) validateEmail();
+  });
+  inputMessage.addEventListener('input', () => {
+    if (groupMessage.classList.contains('error')) validateMessage();
+  });
+
+  // Submit
+  contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    const btn = contactForm.querySelector('.btn-submit');
-    const originalText = btn.textContent;
-    btn.textContent = 'Terkirim!';
-    btn.disabled = true;
+
+    const isNameValid = validateName();
+    const isEmailValid = validateEmail();
+    const isMessageValid = validateMessage();
+
+    if (!isNameValid || !isEmailValid || !isMessageValid) {
+      if (!isNameValid) inputName.focus();
+      else if (!isEmailValid) inputEmail.focus();
+      else inputMessage.focus();
+      return;
+    }
+
+    submitBtn.classList.add('loading');
+
     setTimeout(() => {
-      contactForm.reset();
-      btn.textContent = originalText;
-      btn.disabled = false;
-    }, 2500);
+      submitBtn.classList.remove('loading');
+      contactForm.style.display = 'none';
+      formCard.classList.add('success');
+      successMsg.classList.add('show');
+      showToast('Pesan berhasil dikirim', 'fa-solid fa-circle-check', '#4ADE80');
+    }, 1500);
+  });
+
+  // Reset
+  resetBtn.addEventListener('click', () => {
+    contactForm.reset();
+    charCounter.textContent = '0 / 500';
+    charCounter.classList.remove('warn', 'over');
+    groupName.classList.remove('error', 'focused');
+    groupEmail.classList.remove('error', 'focused');
+    groupMessage.classList.remove('error', 'focused');
+    formCard.classList.remove('success');
+    successMsg.classList.remove('show');
+    contactForm.style.display = '';
+  });
+}
+
+// Toast
+const toastContainer = document.getElementById('toast-container');
+function showToast(message, icon, color) {
+  if (!toastContainer) return;
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.innerHTML = `<i class="${icon}" style="color:${color}"></i><span>${message}</span>`;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add('out');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 3000);
+}
+
+// ============ NEWSLETTER FORM ============
+const newsletterForm = document.getElementById('newsletter-form');
+if (newsletterForm) {
+  const newsletterInput = newsletterForm.querySelector('.newsletter-input');
+  const footerShakeStyle = document.createElement('style');
+  footerShakeStyle.textContent = `@keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }`;
+  document.head.appendChild(footerShakeStyle);
+
+  newsletterForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = newsletterInput.value.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      newsletterForm.style.animation = 'shake 0.4s ease';
+      newsletterForm.addEventListener('animationend', () => {
+        newsletterForm.style.animation = '';
+      }, { once: true });
+      newsletterInput.focus();
+      return;
+    }
+    newsletterInput.value = '';
+    showToast('Berhasil berlangganan newsletter', 'fa-solid fa-circle-check', '#4ADE80');
+  });
+}
+
+// ============ BACK TO TOP ============
+const backToTop = document.getElementById('back-to-top');
+if (backToTop) {
+  backToTop.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
