@@ -6,30 +6,33 @@
   "previewImage": "/media/ChatGPT_Image_9_Jul_2026__20.53.57.png",
   "lynkUrl": "",
   "description": "",
+  "tags": [
+    "web-development"
+  ],
   "formFields": [
     {
-      "id": "field_1783605553881_zl2x",
+      "id": "field_1783775341278_hree",
       "label": "Apa Jenis Usaha UMKM Anda?",
       "type": "text",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783605553881_g0m6",
+      "id": "field_1783775341278_tshy",
       "label": "Apa nama Usaha UMKM Anda?",
       "type": "text",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783605553881_2r2o",
+      "id": "field_1783775341278_dc5r",
       "label": "Seberapa besar Usaha UMKM Anda?",
       "type": "textarea",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783605553881_j222",
+      "id": "field_1783775341278_qv8l",
       "label": "Apakah Usaha anda sangat membutuhkan website UMKM?",
       "type": "text",
       "required": true,
