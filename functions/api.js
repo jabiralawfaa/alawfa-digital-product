@@ -185,6 +185,42 @@ export const handler = async (event) => {
       return json(200, { ok: true })
     }
 
+    if (path === 'save-tag') {
+      if (method !== 'POST') return json(405, { error: 'Method not allowed' })
+      if (!checkAuth(event)) return unauthorized()
+      const { tag } = JSON.parse(event.body || '{}')
+      if (!tag || !tag.id || !tag.name) {
+        return json(400, { error: 'Missing required fields: id, name' })
+      }
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      const sha = await getFileSha(`data/tags/${tag.id}.json`)
+      await octokit.repos.createOrUpdateFileContents({
+        owner, repo, path: `data/tags/${tag.id}.json`,
+        message: `save-tag: ${tag.id}`,
+        content: Buffer.from(JSON.stringify(tag, null, 2)).toString('base64'),
+        sha,
+      })
+      return json(200, { ok: true, id: tag.id })
+    }
+
+    if (path === 'delete-tag') {
+      if (method !== 'POST') return json(405, { error: 'Method not allowed' })
+      if (!checkAuth(event)) return unauthorized()
+      const { tagId } = JSON.parse(event.body || '{}')
+      if (!tagId) return json(400, { error: 'tagId required' })
+      const octokit = getOctokit()
+      const { owner, repo } = getRepo()
+      const sha = await getFileSha(`data/tags/${tagId}.json`)
+      if (sha) {
+        await octokit.repos.deleteFile({
+          owner, repo, path: `data/tags/${tagId}.json`,
+          message: `delete-tag: ${tagId}`, sha,
+        })
+      }
+      return json(200, { ok: true })
+    }
+
     if (path === 'submit-order') {
       if (method !== 'POST') return json(405, { error: 'Method not allowed' })
       const { order } = JSON.parse(event.body || '{}')

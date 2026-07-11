@@ -2,7 +2,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { existsSync, readFileSync, cpSync, statSync, readdirSync, writeFileSync, rmSync, mkdirSync } from 'fs'
-import { trackView, trackClick, saveProduct, deleteProduct, saveLanding, uploadFile, saveService, deleteService, saveOrder } from './api/github.js'
+import { trackView, trackClick, saveProduct, deleteProduct, saveLanding, uploadFile, saveService, deleteService, saveOrder, saveTag, deleteTag } from './api/github.js'
 import errorLoggerPlugin from './tools/vite-error-logger.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -297,6 +297,45 @@ export default defineConfig({
             if (!serviceId) return json(res, 400, { error: 'serviceId required' })
             await deleteService(serviceId)
             const localPath = resolve(__dirname, 'data/services', `${serviceId}.json`)
+            if (existsSync(localPath)) rmSync(localPath)
+            json(res, 200, { ok: true })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/save-tag', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const { tag } = await parseBody(req)
+            if (!tag || !tag.id || !tag.name) {
+              return json(res, 400, { error: 'Missing required fields: id, name' })
+            }
+            await saveTag(tag)
+            const dir = resolve(__dirname, 'data/tags')
+            mkdirSync(dir, { recursive: true })
+            writeFileSync(resolve(dir, `${tag.id}.json`), JSON.stringify(tag, null, 2), 'utf-8')
+            json(res, 200, { ok: true, id: tag.id })
+          } catch (err) {
+            json(res, 500, { error: err.message })
+          }
+        })
+
+        server.middlewares.use('/api/delete-tag', async (req, res) => {
+          if (req.method !== 'POST') return json(res, 405, { error: 'Method not allowed' })
+          try {
+            const auth = req.headers.authorization
+            if (!auth || auth !== `Bearer ${process.env.ADMIN_PASSWORD}`) {
+              return json(res, 401, { error: 'Unauthorized' })
+            }
+            const { tagId } = await parseBody(req)
+            if (!tagId) return json(res, 400, { error: 'tagId required' })
+            await deleteTag(tagId)
+            const localPath = resolve(__dirname, 'data/tags', `${tagId}.json`)
             if (existsSync(localPath)) rmSync(localPath)
             json(res, 200, { ok: true })
           } catch (err) {

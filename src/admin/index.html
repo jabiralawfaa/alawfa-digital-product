@@ -133,6 +133,27 @@
           </div>
           <button class="btn-primary btn-sm" id="btnAddService">+ Tambah Jasa</button>
         </div>
+
+        <!-- Tag Management -->
+        <div class="card" style="margin-bottom:1rem">
+          <div class="card-header" style="display:flex;align-items:center;justify-content:space-between">
+            <h3>Tag Jasa</h3>
+            <button class="btn-secondary btn-sm" id="btnAddTag">+ Buat Tag</button>
+          </div>
+          <div class="card-body">
+            <div class="table-wrapper">
+              <table class="product-table">
+                <thead>
+                  <tr><th>Icon</th><th>Nama Tag</th><th>Maksud</th><th>Aksi</th></tr>
+                </thead>
+                <tbody id="tagTableBody">
+                  <tr><td colspan="4">Memuat tag...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div class="card">
           <div class="card-body">
             <div class="table-wrapper">
@@ -142,12 +163,13 @@
                     <th>Foto</th>
                     <th>Judul</th>
                     <th>Harga</th>
+                    <th>Tag</th>
                     <th>Form Fields</th>
                     <th>Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="serviceTableBody">
-                  <tr><td colspan="5">Memuat data...</td></tr>
+                  <tr><td colspan="6">Memuat data...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -409,6 +431,10 @@
             </div>
           </div>
           <div class="form-group">
+            <label>Tag Jasa</label>
+            <div id="serviceFormTags" class="tag-checkbox-group"></div>
+          </div>
+          <div class="form-group">
             <label>Foto Preview</label>
             <div class="upload-row">
               <input type="text" id="serviceFormPreviewImage" class="form-control" placeholder="/media/..." />
@@ -433,6 +459,35 @@
             </div>
           </div>
           <button type="submit" class="btn-primary btn-sm" id="btnSubmitService" style="margin-top:1rem">Simpan Jasa</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAG MODAL -->
+  <div class="modal-overlay" id="tagModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="tagModalTitle">Buat Tag Baru</h2>
+        <button class="modal-close" id="tagModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="tagForm">
+          <input type="hidden" id="tagId" />
+          <div class="form-group">
+            <label>Nama Tag</label>
+            <input type="text" id="tagFormName" class="form-control" placeholder="Desain Grafis" required />
+          </div>
+          <div class="form-group">
+            <label>Maksud Tag</label>
+            <input type="text" id="tagFormPurpose" class="form-control" placeholder="Identitas visual & kreatif" />
+          </div>
+          <div class="form-group">
+            <label>Icon (SVG)</label>
+            <textarea id="tagFormIcon" class="form-control" rows="4" placeholder="&lt;svg&gt;...&lt;/svg&gt; atau kosongkan untuk icon default"></textarea>
+            <p style="font-size:0.75rem;opacity:0.6;margin-top:4px">Tempel kode SVG atau biarkan kosong untuk menggunakan icon default. Hanya tag &lt;svg&gt; dengan elemen aman diperbolehkan.</p>
+          </div>
+          <button type="submit" class="btn-primary btn-sm" id="btnSubmitTag">Simpan Tag</button>
         </form>
       </div>
     </div>

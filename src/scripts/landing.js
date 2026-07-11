@@ -45,27 +45,6 @@ function formatPrice(price) {
   return 'Rp ' + Number(num).toLocaleString('id-ID')
 }
 
-// ============ NAVBAR SCROLL ============
-const navbar = document.getElementById('navbar');
-
-window.addEventListener('scroll', () => {
-  navbar.classList.toggle('scrolled', window.scrollY > 80);
-});
-
-// ============ SMOOTH SCROLL FOR NAV LINKS ============
-document.querySelectorAll('.nav-links a, .footer-col a[href^="#"]').forEach(link => {
-  link.addEventListener('click', e => {
-    const href = link.getAttribute('href');
-    if (href && href.startsWith('#')) {
-      e.preventDefault();
-      const target = document.querySelector(href);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  });
-});
-
 // ============ LOAD PRODUCTS ============
 async function loadProducts() {
   const grid = document.getElementById('productGrid');
@@ -123,58 +102,181 @@ async function loadProducts() {
 loadProducts();
 
 // ============ LOAD SERVICES ============
-async function loadServices() {
-  const grid = document.getElementById('serviceGrid')
+// ============ TAGS + SERVICES ============
+let allTags = []
+let allServices = []
+let activeTagId = ''
 
+async function loadTags() {
+  try {
+    const filesRes = await fetch('/data/tags')
+    const files = filesRes.ok ? await filesRes.json() : []
+    allTags = []
+    for (const file of files) {
+      const res = await fetch(`/data/tags/${file}`)
+      if (res.ok) allTags.push(await res.json())
+    }
+  } catch {
+    allTags = []
+  }
+}
+
+function buildNavDropdown() {
+  // Desktop dropdown
+  const navDropdown = document.getElementById('navDropdown')
+  if (navDropdown) {
+    if (allTags.length === 0) {
+      navDropdown.innerHTML = ''
+    } else {
+      navDropdown.innerHTML = allTags.map(t => `
+        <a href="#services" class="dropdown-link" role="menuitem" data-tag-id="${t.id}">
+          <div class="dropdown-icon">${t.icon && t.icon.trim() ? t.icon : '<i class="fa-solid fa-tag"></i>'}</div>
+          <div class="dropdown-text">
+            <span class="dropdown-label">${t.name}</span>
+            <span class="dropdown-desc">${t.purpose || ''}</span>
+          </div>
+        </a>
+      `).join('')
+      navDropdown.querySelectorAll('.dropdown-link').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault()
+          document.getElementById('hamburger')?.classList.remove('active')
+          document.getElementById('mobile-menu')?.classList.remove('show')
+          document.getElementById('mobile-overlay')?.classList.remove('show')
+          document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'))
+          document.querySelector('.nav-link[href="#services"]')?.classList.add('active')
+          const section = document.getElementById('services')
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth' })
+            setTimeout(() => setActiveTag(a.dataset.tagId), 400)
+          }
+        })
+      })
+    }
+  }
+
+  // Mobile dropdown
+  const mobileDropdown = document.getElementById('mobileDropdown')
+  if (mobileDropdown) {
+    if (allTags.length === 0) {
+      mobileDropdown.innerHTML = ''
+    } else {
+      mobileDropdown.innerHTML = allTags.map(t => `
+        <a href="#services" class="mobile-dropdown-link" data-tag-id="${t.id}">${t.icon && t.icon.trim() ? t.icon + ' ' : ''}${t.name}</a>
+      `).join('')
+      mobileDropdown.querySelectorAll('.mobile-dropdown-link').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault()
+          document.getElementById('hamburger')?.classList.remove('active')
+          document.getElementById('mobile-menu')?.classList.remove('show')
+          document.getElementById('mobile-overlay')?.classList.remove('show')
+          const section = document.getElementById('services')
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth' })
+            setTimeout(() => setActiveTag(a.dataset.tagId), 400)
+          }
+        })
+      })
+    }
+  }
+}
+
+function buildTagFilterBar() {
+  const bar = document.getElementById('tagFilterBar')
+  if (!bar) return
+  if (allTags.length === 0) {
+    bar.style.display = 'none'
+    return
+  }
+  bar.style.display = ''
+  bar.innerHTML = `<button class="tag-filter-btn active" data-tag="">Semua</button>` +
+    allTags.map(t => `
+      <button class="tag-filter-btn" data-tag="${t.id}">
+        ${t.icon && t.icon.trim() ? t.icon : ''}
+        ${t.name}
+      </button>
+    `).join('')
+
+  bar.querySelectorAll('.tag-filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setActiveTag(btn.dataset.tag)
+    })
+  })
+}
+
+function setActiveTag(tagId) {
+  activeTagId = tagId
+  document.querySelectorAll('.tag-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tag === tagId)
+  })
+  renderServiceGrid()
+}
+
+function renderServiceGrid() {
+  const grid = document.getElementById('serviceGrid')
+  const filtered = activeTagId
+    ? allServices.filter(s => (s.tags || []).includes(activeTagId))
+    : allServices
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<p class="loading-text">Tidak ada jasa untuk tag ini.</p>'
+    return
+  }
+
+  grid.innerHTML = filtered.map(s => `
+    <article class="service-card" data-id="${s.id}" data-animate>
+      <div class="service-card-image">
+        <img
+          src="${s.previewImage || '/placeholder.svg'}"
+          alt="${s.title}"
+          loading="lazy"
+        />
+      </div>
+      <div class="service-card-body">
+        <h3 class="service-card-title">${s.title}</h3>
+        ${s.priceMin || s.priceMax ? `<p class="service-card-price">${s.priceMin ? formatPrice(s.priceMin) : ''}${s.priceMin && s.priceMax ? ' - ' : ''}${s.priceMax ? formatPrice(s.priceMax) : ''}</p>` : ''}
+        <p class="service-card-desc">${(s.description || '').replace(/<[^>]*>/g, '').slice(0, 120)}</p>
+      </div>
+    </article>
+  `).join('')
+
+  grid.querySelectorAll('.service-card').forEach(card => {
+    card.addEventListener('click', () => {
+      const service = allServices.find(s => s.id === card.dataset.id)
+      if (service) openOrderModal(service)
+    })
+  })
+
+  grid.querySelectorAll('[data-animate]').forEach(el => animObserver.observe(el))
+}
+
+async function loadServices() {
   try {
     const filesRes = await fetch('/data/services')
     const files = filesRes.ok ? await filesRes.json() : []
-    const services = []
+    allServices = []
 
     for (const file of files) {
       const res = await fetch(`/data/services/${file}`)
       if (res.ok) {
-        services.push(await res.json())
+        allServices.push(await res.json())
       }
     }
 
-    if (services.length === 0) {
-      grid.innerHTML = ''
-      return
-    }
-
-    grid.innerHTML = services.map(s => `
-      <article class="service-card" data-id="${s.id}" data-animate>
-        <div class="service-card-image">
-          <img
-            src="${s.previewImage || '/placeholder.svg'}"
-            alt="${s.title}"
-            loading="lazy"
-          />
-        </div>
-        <div class="service-card-body">
-          <h3 class="service-card-title">${s.title}</h3>
-          ${s.priceMin || s.priceMax ? `<p class="service-card-price">${s.priceMin ? formatPrice(s.priceMin) : ''}${s.priceMin && s.priceMax ? ' - ' : ''}${s.priceMax ? formatPrice(s.priceMax) : ''}</p>` : ''}
-          <p class="service-card-desc">${(s.description || '').replace(/<[^>]*>/g, '').slice(0, 120)}</p>
-        </div>
-      </article>
-    `).join('')
-
-    grid.querySelectorAll('.service-card').forEach(card => {
-      card.addEventListener('click', () => {
-        const service = services.find(s => s.id === card.dataset.id)
-        if (service) openOrderModal(service)
-      })
-    })
-
-    grid.querySelectorAll('[data-animate]').forEach(el => animObserver.observe(el))
-
+    renderServiceGrid()
   } catch {
-    grid.innerHTML = ''
+    document.getElementById('serviceGrid').innerHTML = ''
   }
 }
 
-loadServices();
+async function initServices() {
+  await loadTags()
+  buildNavDropdown()
+  buildTagFilterBar()
+  await loadServices()
+}
+
+initServices();
 
 // ============ ORDER MODAL ============
 const orderModal = document.getElementById('orderModal')
@@ -462,3 +564,100 @@ if (backToTop) {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
+
+// ============ NAVBAR SCROLL ============
+const navbar = document.getElementById('navbar');
+if (navbar) {
+  const SCROLL_THRESHOLD = 60;
+
+  function handleNavScroll() {
+    if (window.scrollY > SCROLL_THRESHOLD) {
+      navbar.classList.remove('navbar--top');
+      navbar.classList.add('navbar--scrolled');
+    } else {
+      navbar.classList.remove('navbar--scrolled');
+      navbar.classList.add('navbar--top');
+    }
+  }
+
+  let ticking2 = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking2) {
+      window.requestAnimationFrame(() => {
+        handleNavScroll();
+        ticking2 = false;
+      });
+      ticking2 = true;
+    }
+  }, { passive: true });
+
+  handleNavScroll();
+}
+
+// ============ HAMBURGER MENU ============
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobile-menu');
+const mobileOverlay = document.getElementById('mobile-overlay');
+if (hamburger && mobileMenu && mobileOverlay) {
+  let isMenuOpen = false;
+
+  function openMenu() {
+    isMenuOpen = true;
+    hamburger.classList.add('active');
+    hamburger.setAttribute('aria-expanded', 'true');
+    hamburger.setAttribute('aria-label', 'Tutup menu navigasi');
+    mobileMenu.classList.add('show');
+    mobileOverlay.classList.add('show');
+    mobileOverlay.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    isMenuOpen = false;
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+    hamburger.setAttribute('aria-label', 'Buka menu navigasi');
+    mobileMenu.classList.remove('show');
+    mobileOverlay.classList.remove('show');
+    mobileOverlay.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    document.querySelectorAll('.mobile-nav-item.open').forEach((item) => {
+      item.classList.remove('open');
+    });
+  }
+
+  hamburger.addEventListener('click', () => {
+    if (isMenuOpen) closeMenu();
+    else openMenu();
+  });
+
+  mobileOverlay.addEventListener('click', closeMenu);
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMenuOpen) {
+      closeMenu();
+      hamburger.focus();
+    }
+  });
+}
+
+// ============ MOBILE DROPDOWN (Layanan) ============
+const mobileLayanan = document.getElementById('mobile-layanan');
+const mobileLayananLink = document.getElementById('mobile-layanan-link');
+if (mobileLayananLink) {
+  mobileLayananLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    mobileLayanan.classList.toggle('open');
+  });
+}
+
+// ============ CLOSE MOBILE MENU ON LINK CLICK ============
+document.querySelectorAll('.mobile-nav-link:not(#mobile-layanan-link), .mobile-dropdown-link, .mobile-cta').forEach((link) => {
+  link.addEventListener('click', () => {
+    setTimeout(() => {
+      if (mobileMenu && mobileMenu.classList.contains('show')) {
+        document.getElementById('hamburger')?.click();
+      }
+    }, 200);
+  });
+});

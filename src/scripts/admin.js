@@ -622,6 +622,182 @@ document.querySelectorAll('.sidebar-nav a[data-section]').forEach(link => {
   }
 })
 
+// ============ TAGS ============
+let allTags = []
+
+async function loadTags() {
+  try {
+    const filesRes = await fetch('/data/tags')
+    const files = filesRes.ok ? await filesRes.json() : []
+    allTags = []
+    for (const file of files) {
+      const res = await fetch(`/data/tags/${file}`)
+      if (res.ok) allTags.push(await res.json())
+    }
+    renderTagTable()
+    renderServiceTagCheckboxes(allTags)
+  } catch {
+    allTags = []
+    document.getElementById('tagTableBody').innerHTML = '<tr><td colspan="4">Gagal memuat tag.</td></tr>'
+  }
+}
+
+function renderTagTable() {
+  const tbody = document.getElementById('tagTableBody')
+  if (allTags.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4">Belum ada tag. Klik "Buat Tag" untuk menambah.</td></tr>'
+    return
+  }
+  tbody.innerHTML = allTags.map(t => {
+    const hasIcon = t.icon && t.icon.trim()
+    return `<tr>
+      <td>${hasIcon ? t.icon : '<span style="opacity:0.4;font-size:22px">&#9679;</span>'}</td>
+      <td><strong>${t.name}</strong></td>
+      <td>${t.purpose || '-'}</td>
+      <td><button class="btn-delete" data-id="${t.id}">Hapus</button></td>
+    </tr>`
+  }).join('')
+  tbody.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', () => deleteTag(btn.dataset.id))
+  })
+}
+
+function renderServiceTagCheckboxes(tags) {
+  const container = document.getElementById('serviceFormTags')
+  if (!container) return
+  if (!tags || tags.length === 0) {
+    container.innerHTML = '<p style="font-size:0.875rem;opacity:0.6">Belum ada tag. Buat tag terlebih dahulu.</p>'
+    return
+  }
+  container.innerHTML = tags.map(t => `
+    <label class="tag-checkbox-label">
+      <input type="checkbox" class="service-tag-cb" value="${t.id}" />
+      ${t.icon && t.icon.trim() ? t.icon : '<span style="opacity:0.5">&#9679;</span>'}
+      ${t.name}
+    </label>
+  `).join('')
+}
+
+function collectSelectedTags() {
+  const cbs = document.querySelectorAll('.service-tag-cb:checked')
+  return Array.from(cbs).map(cb => cb.value)
+}
+
+// Tag Modal
+const tagModal = document.getElementById('tagModal')
+const tagModalTitle = document.getElementById('tagModalTitle')
+const tagForm = document.getElementById('tagForm')
+const btnSubmitTag = document.getElementById('btnSubmitTag')
+let editingTagId = null
+
+document.getElementById('btnAddTag').addEventListener('click', () => openAddTagModal())
+document.getElementById('tagModalClose').addEventListener('click', () => closeTagModal())
+tagModal.addEventListener('click', e => { if (e.target === tagModal) closeTagModal() })
+
+function openAddTagModal() {
+  editingTagId = null
+  tagModalTitle.textContent = 'Buat Tag Baru'
+  tagForm.reset()
+  document.getElementById('tagId').value = ''
+  btnSubmitTag.textContent = 'Simpan Tag'
+  tagModal.classList.add('open')
+}
+
+function closeTagModal() {
+  tagModal.classList.remove('open')
+  editingTagId = null
+}
+
+tagForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const name = document.getElementById('tagFormName').value.trim()
+  const purpose = document.getElementById('tagFormPurpose').value.trim()
+  const icon = document.getElementById('tagFormIcon').value.trim()
+
+  if (!name) { alert('Nama tag wajib diisi'); return }
+
+  const id = editingTagId || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'tag-' + Date.now()
+
+  // Sanitize SVG: only allow <svg>, <path>, <circle>, <rect>, <line>, <polyline>, <polygon>, <g>, <defs>, <linearGradient>, <stop>, <ellipse> and safe attributes
+  let safeIcon = ''
+  if (icon) {
+    const allowedTags = ['svg', 'path', 'circle', 'rect', 'line', 'polyline', 'polygon', 'g', 'defs', 'linearGradient', 'stop', 'ellipse', 'text', 'tspan']
+    const allowedAttrs = /^(fill|stroke|stroke-width|viewBox|d|cx|cy|r|x|y|width|height|rx|ry|points|x1|y1|x2|y2|opacity|transform|style|stop-color|offset|text-anchor|font-size|font-family|font-weight|class|id|xmlns|version|preserveAspectRatio|data-[a-z-]+)$/i
+    try {
+      const parser = new DOMParser()
+      const doc = parser.parseFromString(icon, 'text/html')
+      const svg = doc.body.querySelector('svg')
+      if (svg) {
+        const clean = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        Array.from(svg.attributes).forEach(attr => {
+          if (allowedAttrs.test(attr.name)) clean.setAttribute(attr.name, attr.value)
+        })
+        function cleanChildren(src, dest) {
+          Array.from(src.childNodes).forEach(child => {
+            if (child.nodeType === 3) { dest.appendChild(document.createTextNode(child.textContent)); return }
+            if (child.nodeType !== 1) return
+            const tag = child.tagName.toLowerCase()
+            if (!allowedTags.includes(tag)) return
+            const el = document.createElementNS('http://www.w3.org/2000/svg', tag)
+            Array.from(child.attributes).forEach(attr => {
+              if (allowedAttrs.test(attr.name)) el.setAttribute(attr.name, attr.value)
+            })
+            if (child.childNodes.length > 0) cleanChildren(child, el)
+            dest.appendChild(el)
+          })
+        }
+        cleanChildren(svg, clean)
+        safeIcon = clean.outerHTML
+      }
+    } catch {}
+  }
+
+  const tag = { id, name, purpose, icon: safeIcon }
+
+  btnSubmitTag.disabled = true
+  btnSubmitTag.textContent = 'Menyimpan...'
+
+  try {
+    const res = await fetch('/api/save-tag', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({ tag }),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Gagal menyimpan: ' + (err.error || 'Unknown error'))
+      return
+    }
+    closeTagModal()
+    await loadTags()
+  } catch (err) {
+    alert('Gagal menyimpan: ' + err.message)
+  } finally {
+    btnSubmitTag.disabled = false
+    btnSubmitTag.textContent = 'Simpan Tag'
+  }
+})
+
+async function deleteTag(id) {
+  const tag = allTags.find(t => t.id === id)
+  if (!confirm(`Hapus tag "${tag?.name}"?`)) return
+  try {
+    const res = await fetch('/api/delete-tag', {
+      method: 'POST',
+      headers: apiHeaders(),
+      body: JSON.stringify({ tagId: id }),
+    })
+    if (!res.ok) {
+      const err = await res.json()
+      alert('Gagal menghapus: ' + (err.error || 'Unknown error'))
+      return
+    }
+    await loadTags()
+  } catch (err) {
+    alert('Gagal menghapus: ' + err.message)
+  }
+}
+
 // ============ SERVICES ============
 let allServices = []
 
@@ -637,7 +813,7 @@ async function loadServices() {
     renderServiceTable(document.getElementById('searchService').value)
   } catch {
     allServices = []
-    document.getElementById('serviceTableBody').innerHTML = '<tr><td colspan="5">Gagal memuat data.</td></tr>'
+    document.getElementById('serviceTableBody').innerHTML = '<tr><td colspan="6">Gagal memuat data.</td></tr>'
   }
 }
 
@@ -648,22 +824,27 @@ function renderServiceTable(filter = '') {
     : allServices
 
   if (filtered.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5">Belum ada jasa.</td></tr>'
+    tbody.innerHTML = '<tr><td colspan="6">Belum ada jasa.</td></tr>'
     return
   }
 
-  tbody.innerHTML = filtered.map(s => `
-    <tr>
+  tbody.innerHTML = filtered.map(s => {
+    const tagNames = (s.tags || []).map(tid => {
+      const t = allTags.find(tg => tg.id === tid)
+      return t ? t.name : tid
+    }).join(', ')
+    return `<tr>
       <td><img src="${s.previewImage || '/placeholder.svg'}" alt="${s.title}" /></td>
       <td><strong>${s.title}</strong></td>
       <td>${s.price || '-'}</td>
+      <td>${tagNames || '-'}</td>
       <td>${(s.formFields || []).length} pertanyaan</td>
       <td>
         <button class="btn-edit" data-id="${s.id}">Edit</button>
         <button class="btn-delete" data-id="${s.id}">Hapus</button>
       </td>
-    </tr>
-  `).join('')
+    </tr>`
+  }).join('')
 
   tbody.querySelectorAll('.btn-edit').forEach(btn => {
     btn.addEventListener('click', () => openEditServiceModal(btn.dataset.id))
@@ -766,6 +947,8 @@ function openAddServiceModal() {
   document.getElementById('serviceId').value = ''
   document.getElementById('formFieldsContainer').innerHTML = '<p style="font-size:0.875rem;opacity:0.6">Belum ada pertanyaan. Klik tombol di bawah untuk menambah.</p>'
   btnSubmitService.textContent = 'Simpan Jasa'
+  renderServiceTagCheckboxes(allTags)
+  document.querySelectorAll('.service-tag-cb').forEach(cb => cb.checked = false)
   serviceModal.classList.add('open')
 }
 
@@ -783,6 +966,11 @@ function openEditServiceModal(id) {
   document.getElementById('serviceFormLynkUrl').value = service.lynkUrl || ''
   document.getElementById('serviceFormDescription').value = service.description || ''
   renderFormFields(service.formFields || [])
+  renderServiceTagCheckboxes(allTags)
+  const serviceTags = service.tags || []
+  document.querySelectorAll('.service-tag-cb').forEach(cb => {
+    cb.checked = serviceTags.includes(cb.value)
+  })
   btnSubmitService.textContent = 'Update Jasa'
   serviceModal.classList.add('open')
 }
@@ -804,6 +992,7 @@ serviceForm.addEventListener('submit', async (e) => {
     previewImage: document.getElementById('serviceFormPreviewImage').value.trim() || '/placeholder.svg',
     lynkUrl: document.getElementById('serviceFormLynkUrl').value.trim(),
     description: document.getElementById('serviceFormDescription').value.trim(),
+    tags: collectSelectedTags(),
     formFields: collectFormFields(),
     createdAt: editingServiceId ? undefined : new Date().toISOString(),
   }
@@ -994,6 +1183,7 @@ async function init() {
   renderOverview()
   renderProductTable()
   loadLandingEditor()
+  loadTags()
 
   // Init WYSIWYG
   if (typeof hugeRTE !== 'undefined') {

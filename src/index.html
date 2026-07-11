@@ -12,24 +12,98 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
-  <nav class="navbar" id="navbar">
-    <div class="container navbar-inner">
-      <a href="/" class="logo"><img src="/logo.png" alt="Al-Awfa Digital Product" /></a>
-      <ul class="nav-links">
-        <li><a href="#hero">Beranda</a></li>
-        <li><a href="#about">Tentang</a></li>
-        <li><a href="#catalog">Katalog</a></li>
-        <li><a href="#services">Jasa</a></li>
-        <li><a href="#contact">Kontak</a></li>
-        <li>
-          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-            <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-          </button>
-        </li>
-      </ul>
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar navbar--top" id="navbar" role="navigation" aria-label="Navigasi utama">
+
+    <!-- Logo -->
+    <a href="#hero" class="navbar-logo" aria-label="Al-Awfa Digital Product - Beranda">
+      <div class="logo-mark" aria-hidden="true">A</div>
+      <span class="logo-text">Al-Awfa Digital</span>
+    </a>
+
+    <!-- Desktop Links -->
+    <ul class="navbar-links">
+      <li class="nav-item">
+        <a href="#hero" class="nav-link active">Beranda</a>
+      </li>
+      <li class="nav-item">
+        <a href="#about" class="nav-link">Tentang</a>
+      </li>
+      <li class="nav-item">
+        <a href="#services" class="nav-link">
+          Layanan
+          <i class="fa-solid fa-chevron-down chevron" aria-hidden="true"></i>
+        </a>
+        <div class="nav-dropdown" id="navDropdown" role="menu"></div>
+      </li>
+      <li class="nav-item">
+        <a href="#catalog" class="nav-link">Katalog</a>
+      </li>
+      <li class="nav-item">
+        <a href="#contact" class="nav-link">Kontak</a>
+      </li>
+    </ul>
+
+    <!-- Right Side -->
+    <div class="navbar-right">
+      <a href="#catalog" class="nav-cta">
+        Lihat Katalog
+        <i class="fa-solid fa-arrow-right cta-arrow" aria-hidden="true"></i>
+      </a>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="navbar-hamburger" id="hamburger" aria-label="Buka menu navigasi" aria-expanded="false">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
     </div>
+
   </nav>
+
+  <!-- Mobile Overlay -->
+  <div class="mobile-overlay" id="mobile-overlay" aria-hidden="true"></div>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu" role="dialog" aria-label="Menu navigasi mobile">
+    <ul class="mobile-links">
+      <li class="mobile-nav-item">
+        <a href="#hero" class="mobile-nav-link active">Beranda</a>
+      </li>
+      <li class="mobile-nav-item">
+        <a href="#about" class="mobile-nav-link">Tentang</a>
+      </li>
+      <li class="mobile-nav-item" id="mobile-layanan">
+        <a href="#services" class="mobile-nav-link" id="mobile-layanan-link">
+          Layanan
+          <i class="fa-solid fa-chevron-down m-chevron" aria-hidden="true"></i>
+        </a>
+        <div class="mobile-dropdown" id="mobileDropdown"></div>
+      </li>
+      <li class="mobile-nav-item">
+        <a href="#catalog" class="mobile-nav-link">Katalog</a>
+      </li>
+      <li class="mobile-nav-item">
+        <a href="#contact" class="mobile-nav-link">Kontak</a>
+      </li>
+    </ul>
+
+    <div class="mobile-cta-wrap">
+      <a href="#catalog" class="mobile-cta">
+        Lihat Katalog
+        <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+      </a>
+    </div>
+
+    <div class="mobile-social" aria-label="Media sosial">
+      <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" aria-label="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+      <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+      <a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+    </div>
+  </div>
 
   <main>
     <section class="hero" id="hero">
@@ -172,6 +246,10 @@
             Jasa <span class="services-highlight">Kreatif</span> Digital
           </h2>
         </div>
+      </div>
+
+      <div class="tag-filter-bar" id="tagFilterBar">
+        <button class="tag-filter-btn active" data-tag="">Semua</button>
       </div>
 
       <div class="services-grid" id="serviceGrid">

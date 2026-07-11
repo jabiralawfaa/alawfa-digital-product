@@ -162,6 +162,32 @@ export async function deleteService(serviceId) {
   })
 }
 
+export async function saveTag(tagData) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `data/tags/${tagData.id}.json`
+  const sha = await getFileSha(path)
+  await octokit.repos.createOrUpdateFileContents({
+    owner, repo, path,
+    message: `save-tag: ${tagData.id}`,
+    content: Buffer.from(JSON.stringify(tagData, null, 2)).toString('base64'),
+    sha,
+  })
+}
+
+export async function deleteTag(tagId) {
+  const octokit = getOctokit()
+  const { owner, repo } = getRepo()
+  const path = `data/tags/${tagId}.json`
+  const sha = await getFileSha(path)
+  if (!sha) return
+  await octokit.repos.deleteFile({
+    owner, repo, path,
+    message: `delete-tag: ${tagId}`,
+    sha,
+  })
+}
+
 export async function saveOrder(orderData) {
   const octokit = getOctokit()
   const { owner, repo } = getRepo()

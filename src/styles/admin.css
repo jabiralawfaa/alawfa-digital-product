@@ -701,3 +701,47 @@ textarea.form-control {
     padding: 1rem;
   }
 }
+
+/* ============ TAG MANAGEMENT ============ */
+.tag-checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+.tag-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  border: 1.5px solid #d1d5db;
+  background: #f9fafb;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s ease;
+}
+.tag-checkbox-label svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.tag-checkbox-label:hover {
+  border-color: #3b82f6;
+  background: #eff6ff;
+}
+.tag-checkbox-label:has(input:checked) {
+  border-color: #3b82f6;
+  background: #dbeafe;
+  color: #1e40af;
+}
+.tag-checkbox-label input[type="checkbox"] {
+  display: none;
+}
+#tagTableBody td:first-child svg {
+  width: 24px;
+  height: 24px;
+  display: inline-block;
+  vertical-align: middle;
+}
