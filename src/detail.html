@@ -6,12 +6,68 @@
   <title>Detail Produk — Al-Awfa Digital Product</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link rel="stylesheet" href="/styles/base.css" />
+  <link rel="stylesheet" href="/styles/loading.css" />
   <link rel="stylesheet" href="/styles/detail.css" />
 </head>
 <body>
+
+  <!-- ========== LOADING SCREEN ========== -->
+  <div class="loading-screen" id="loading-screen" role="status" aria-label="Memuat halaman">
+
+    <div class="parallax-scene" id="parallax-scene">
+      <div class="parallax-grid" data-depth="0.02" aria-hidden="true"></div>
+      <div class="parallax-glow" data-depth="0.03" aria-hidden="true"></div>
+      <div class="parallax-shapes" data-depth="0.06" aria-hidden="true">
+        <div class="shape shape--ring"></div>
+        <div class="shape shape--ring-2"></div>
+        <div class="shape shape--square"></div>
+        <div class="shape shape--square-2"></div>
+        <div class="shape shape--diamond"></div>
+        <div class="shape shape--diamond-2"></div>
+        <div class="shape shape--dot-ring"></div>
+      </div>
+      <div class="parallax-particles" data-depth="0.1" id="parallax-particles" aria-hidden="true"></div>
+    </div>
+
+    <div class="corner-accent corner-accent--tl" aria-hidden="true"></div>
+    <div class="corner-accent corner-accent--tr" aria-hidden="true"></div>
+    <div class="corner-accent corner-accent--bl" aria-hidden="true"></div>
+    <div class="corner-accent corner-accent--br" aria-hidden="true"></div>
+
+    <div class="loading-center">
+      <div class="logo-loader">
+        <svg class="progress-ring" viewBox="0 0 140 140">
+          <circle class="progress-ring__bg" cx="70" cy="70" r="65" />
+          <circle class="progress-ring__fill" id="ring-fill" cx="70" cy="70" r="65" />
+        </svg>
+        <div class="spin-ring" aria-hidden="true"></div>
+        <div class="spin-ring spin-ring--2" aria-hidden="true"></div>
+        <div class="spin-ring spin-ring--3" aria-hidden="true"></div>
+        <div class="loader-mark">
+          <div class="loader-mark-inner">
+            <img src="/logo.png" alt="Al-Awfa Digital" />
+          </div>
+        </div>
+        <div class="orbit-dot" aria-hidden="true"></div>
+        <div class="orbit-dot orbit-dot--2" aria-hidden="true"></div>
+      </div>
+      <div class="loading-text">
+        <p class="loading-brand">Al-Awfa Digital</p>
+        <p class="loading-status">
+          <span id="status-text"></span><span class="typing-cursor" aria-hidden="true"></span>
+        </p>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="bar-fill"></div>
+        </div>
+        <p class="progress-percent" id="percent-text" aria-live="polite">0%</p>
+      </div>
+    </div>
+  </div>
 
   <!-- ========== TOP NAV ========== -->
   <nav class="top-nav" role="navigation" aria-label="Navigasi atas">
@@ -118,5 +174,118 @@
 
   <script type="module" src="/scripts/theme.js"></script>
   <script type="module" src="/scripts/detail.js"></script>
+
+  <script>
+    (function(){
+      const particleContainer = document.getElementById('parallax-particles');
+      if (particleContainer) {
+        for (let i = 0; i < 25; i++) {
+          const p = document.createElement('div');
+          p.className = 'p-particle';
+          const size = Math.random() * 3 + 1;
+          p.style.cssText = '--size:'+size+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;--dur:'+(Math.random()*4+3)+'s;--delay:'+(Math.random()*5)+'s;--max-o:'+(Math.random()*0.4+0.1)+';--drift-y:'+((Math.random()-0.5)*60)+'px';
+          particleContainer.appendChild(p);
+        }
+      }
+
+      const parallaxScene = document.getElementById('parallax-scene');
+      if (parallaxScene && window.matchMedia('(pointer: fine)').matches) {
+        const depthLayers = parallaxScene.querySelectorAll('[data-depth]');
+        document.addEventListener('mousemove', function(e){
+          var cx = (e.clientX / window.innerWidth - 0.5) * 2;
+          var cy = (e.clientY / window.innerHeight - 0.5) * 2;
+          depthLayers.forEach(function(layer){
+            var depth = parseFloat(layer.dataset.depth);
+            layer.style.transform = 'translate('+(cx*depth*100)+'px,'+(cy*depth*100)+'px)';
+          });
+        });
+      }
+
+      const ringFill = document.getElementById('ring-fill');
+      const barFill = document.getElementById('bar-fill');
+      const percentText = document.getElementById('percent-text');
+      const statusText = document.getElementById('status-text');
+      const loadingScreen = document.getElementById('loading-screen');
+
+      if (!ringFill || !barFill) return;
+
+      const statusMessages = [
+        'Mempersiapkan elemen visual',
+        'Memuat aset desain',
+        'Menginisialisasi komponen',
+        'Mengoptimalkan performa',
+        'Hampir selesai'
+      ];
+
+      const circumference = 2 * Math.PI * 65;
+      ringFill.style.strokeDasharray = circumference;
+      ringFill.style.strokeDashoffset = circumference;
+
+      var progress = 0;
+      var messageIndex = 0;
+      var charIndex = 0;
+      var currentMessage = '';
+      var isTyping = false;
+      var finished = false;
+
+      function typeStatus(){
+        if (messageIndex >= statusMessages.length) return;
+        var fullText = statusMessages[messageIndex];
+        if (!isTyping) { isTyping = true; charIndex = 0; currentMessage = ''; }
+        if (charIndex < fullText.length) {
+          currentMessage += fullText[charIndex];
+          if (statusText) statusText.textContent = currentMessage;
+          charIndex++;
+          setTimeout(typeStatus, 30 + Math.random() * 25);
+        } else {
+          isTyping = false;
+          messageIndex++;
+          setTimeout(typeStatus, 800 + Math.random() * 400);
+        }
+      }
+
+      setTimeout(typeStatus, 1200);
+
+      const MIN_LOAD = 1200;
+      const startedAt = Date.now();
+      var smoothProgress = 0;
+      var progressTimer;
+
+      function exitLoading() {
+        if (finished) return;
+        finished = true;
+        clearInterval(progressTimer);
+        progress = 100;
+        if (percentText) percentText.textContent = '100%';
+        if (barFill) barFill.style.width = '100%';
+        ringFill.style.strokeDashoffset = 0;
+
+        setTimeout(function(){
+          loadingScreen.classList.add('exit');
+          loadingScreen.addEventListener('transitionend', function(){ loadingScreen.remove(); }, { once: true });
+        }, 400);
+      }
+
+      window.addEventListener('load', function() {
+        var elapsed = Date.now() - startedAt;
+        var delay = Math.max(0, MIN_LOAD - elapsed);
+        setTimeout(exitLoading, delay);
+      });
+
+      progressTimer = setInterval(function(){
+        if (finished) return;
+        var t = smoothProgress / 100;
+        var eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        progress = eased * 100;
+        smoothProgress += 1.2;
+
+        var clamped = Math.min(Math.round(progress), 100);
+        if (percentText) percentText.textContent = clamped + '%';
+        if (barFill) barFill.style.width = clamped + '%';
+        var offset = circumference - (clamped / 100) * circumference;
+        if (ringFill) ringFill.style.strokeDashoffset = offset;
+      }, 30);
+    })();
+  </script>
 </body>
 </html>

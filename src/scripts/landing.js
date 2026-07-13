@@ -1,19 +1,45 @@
 // ============ SCROLL ANIMATIONS (IntersectionObserver) ============
-const animObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible')
-        animObserver.unobserve(entry.target)
-      }
-    })
-  },
-  { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-)
+let animObserver
+const pendingAnimate = new Set()
 
-document.querySelectorAll('[data-animate]').forEach((el) => {
-  animObserver.observe(el)
-})
+function initObserver() {
+  animObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (window.__loading) {
+            pendingAnimate.add(entry.target)
+          } else {
+            entry.target.classList.add('visible')
+            animObserver.unobserve(entry.target)
+          }
+        }
+      })
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  )
+
+  document.querySelectorAll('[data-animate]').forEach((el) => {
+    animObserver.observe(el)
+  })
+}
+
+initObserver()
+
+if (window.__loading) {
+  const poll = setInterval(() => {
+    if (!window.__loading) {
+      clearInterval(poll)
+      pendingAnimate.forEach(el => {
+        if (el && !el.classList.contains('visible')) {
+          el.classList.add('visible')
+          animObserver?.unobserve(el)
+        }
+      })
+      pendingAnimate.clear()
+    }
+  }, 100)
+}
 
 // ============ CARD PARALLAX TILT ============
 if (window.matchMedia('(min-width: 901px)').matches && !window.matchMedia('(pointer: coarse)').matches) {

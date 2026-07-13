@@ -7,32 +7,33 @@
   "lynkUrl": "",
   "description": "",
   "tags": [
+    "mini-web-development",
     "web-development"
   ],
   "formFields": [
     {
-      "id": "field_1783775341278_hree",
+      "id": "field_1783948096646_6awr",
       "label": "Apa Jenis Usaha UMKM Anda?",
       "type": "text",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783775341278_tshy",
+      "id": "field_1783948096646_n0o7",
       "label": "Apa nama Usaha UMKM Anda?",
       "type": "text",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783775341278_dc5r",
+      "id": "field_1783948096646_kmna",
       "label": "Seberapa besar Usaha UMKM Anda?",
       "type": "textarea",
       "required": true,
       "options": []
     },
     {
-      "id": "field_1783775341278_qv8l",
+      "id": "field_1783948096646_ce5y",
       "label": "Apakah Usaha anda sangat membutuhkan website UMKM?",
       "type": "text",
       "required": true,

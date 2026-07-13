@@ -56,6 +56,7 @@ export default defineConfig({
       input: {
         main: resolve(__dirname, 'src/index.html'),
         detail: resolve(__dirname, 'src/detail.html'),
+        error: resolve(__dirname, 'src/error.html'),
         admin: resolve(__dirname, 'src/admin/index.html'),
         login: resolve(__dirname, 'src/admin/login.html'),
       },
@@ -383,6 +384,47 @@ export default defineConfig({
             json(res, 500, { error: err.message })
           }
         })
+      },
+    },
+    {
+      name: 'error-routes',
+      configureServer(server) {
+        server.middlewares.use((req, res, next) => {
+          if (req.method !== 'GET') return next()
+
+          const url = req.url.split('?')[0].split('#')[0]
+
+          if (
+            url === '/' || url === '' ||
+            url === '/index.html' ||
+            url === '/detail.html' ||
+            url === '/error.html' ||
+            url === '/admin' || url.startsWith('/admin/') ||
+            url.startsWith('/api/') ||
+            url.startsWith('/data/') ||
+            url.startsWith('/media/') ||
+            url.startsWith('/assets/') ||
+            url.startsWith('/styles/') ||
+            url.startsWith('/scripts/') ||
+            url.startsWith('/@') ||
+            /\.\w+$/.test(url)
+          ) return next()
+
+          // Redirect unknown routes to error page
+          res.statusCode = 302
+          res.setHeader('Location', '/error.html?code=404')
+          res.end()
+        })
+      },
+    },
+    {
+      name: 'copy-404',
+      closeBundle() {
+        const src = resolve(__dirname, 'dist/error.html')
+        const dest = resolve(__dirname, 'dist/404.html')
+        if (existsSync(src)) {
+          cpSync(src, dest, { force: true })
+        }
       },
     },
     errorLoggerPlugin(),

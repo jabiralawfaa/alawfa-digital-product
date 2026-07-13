@@ -16,17 +16,47 @@ function getProductId() {
 /* =============================================
    SCROLL REVEAL
    ============================================= */
-const revealObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
-      }
-    });
-  },
-  { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
-);
+let revealObserver;
+const pendingReveal = new Set();
+
+function initRevealObserver() {
+  revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          if (window.__loading) {
+            pendingReveal.add(entry.target);
+          } else {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+          }
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+  );
+
+  document.querySelectorAll('[data-animate]').forEach((el) => {
+    revealObserver.observe(el);
+  });
+}
+
+initRevealObserver();
+
+if (window.__loading) {
+  const poll = setInterval(() => {
+    if (!window.__loading) {
+      clearInterval(poll);
+      pendingReveal.forEach(el => {
+        if (el && !el.classList.contains('visible')) {
+          el.classList.add('visible');
+          revealObserver?.unobserve(el);
+        }
+      });
+      pendingReveal.clear();
+    }
+  }, 100);
+}
 
 function observeAnimated() {
   document.querySelectorAll('[data-animate]').forEach((el) => {
