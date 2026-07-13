@@ -179,6 +179,28 @@ function buildNavDropdown() {
       })
     }
   }
+
+  // Footer Layanan
+  const footerLayanan = document.getElementById('footerLayanan')
+  if (footerLayanan) {
+    if (allTags.length === 0) {
+      footerLayanan.innerHTML = ''
+    } else {
+      footerLayanan.innerHTML = allTags.map(t => `
+        <li><a href="#services" data-tag-id="${t.id}">${t.name}</a></li>
+      `).join('')
+      footerLayanan.querySelectorAll('a').forEach(a => {
+        a.addEventListener('click', e => {
+          e.preventDefault()
+          const section = document.getElementById('services')
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth' })
+            setTimeout(() => setActiveTag(a.dataset.tagId), 400)
+          }
+        })
+      })
+    }
+  }
 }
 
 function buildTagFilterBar() {

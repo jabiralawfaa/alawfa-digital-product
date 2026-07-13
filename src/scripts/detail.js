@@ -13,12 +13,53 @@ function getProductId() {
   return params.get('id');
 }
 
+/* =============================================
+   SCROLL REVEAL
+   ============================================= */
+const revealObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },
+  { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
+);
+
+function observeAnimated() {
+  document.querySelectorAll('[data-animate]').forEach((el) => {
+    revealObserver.observe(el);
+  });
+}
+
+/* =============================================
+   TOAST
+   ============================================= */
+const toastContainer = document.getElementById('toastContainer');
+
+function showToast(message, icon, color) {
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.style.borderLeftColor = color || 'var(--teal)';
+  toast.innerHTML = `<i class="${icon}" style="color:${color || 'var(--teal)'}"></i><span>${message}</span>`;
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add('out');
+    toast.addEventListener('animationend', () => toast.remove());
+  }, 3000);
+}
+
+/* =============================================
+   LOAD DETAIL
+   ============================================= */
 async function loadDetail() {
-  const container = document.getElementById('productDetail');
   const id = getProductId();
 
   if (!id) {
-    container.innerHTML = '<p class="loading-text">Produk tidak ditemukan.</p>';
+    document.getElementById('productName').textContent = 'Produk tidak ditemukan.';
     return;
   }
 
@@ -30,52 +71,93 @@ async function loadDetail() {
 
     document.title = `${product.title} — Al-Awfa Digital Product`;
 
-    const galleryHtml = (product.gallery || []).map(src => {
-      const isVideo = src.match(/\.(mp4|webm|ogg)$/i);
-      return isVideo
-        ? `<video src="${src}" controls></video>`
-        : `<img src="${src}" alt="Galeri ${product.title}" loading="lazy" />`;
-    }).join('');
+    // Hero image
+    const img = document.getElementById('productImage');
+    img.src = product.previewImage || '/placeholder.svg';
+    img.alt = product.title;
 
-    container.innerHTML = `
-      <figure class="product-detail-figure">
-        <img
-          src="${product.previewImage || '/placeholder.svg'}"
-          alt="${product.title}"
-        />
-      </figure>
+    // Badge
+    document.getElementById('badgeText').textContent = product.category || 'Produk';
 
-      <header class="product-detail-header">
-        <span class="product-detail-category">${product.category}</span>
-        <h1 class="product-detail-title">${product.title}</h1>
-        ${product.price ? `<p class="product-detail-price">${formatPrice(product.price)}</p>` : ''}
-      </header>
+    // Tag
+    document.getElementById('tagText').textContent = product.category || 'Kategori';
 
-      <div class="product-detail-description">
-        ${product.description || ''}
-      </div>
+    // Name
+    document.getElementById('productName').textContent = product.title;
 
-      ${galleryHtml ? `<div class="product-detail-gallery">${galleryHtml}</div>` : ''}
-    `;
+    // Price
+    if (product.price) {
+      document.getElementById('priceMain').textContent = formatPrice(product.price);
+      document.getElementById('productPriceArea').style.display = '';
+    } else {
+      document.getElementById('productPriceArea').style.display = 'none';
+    }
 
+    // CTA button
     const btnCta = document.getElementById('btnCta');
-    btnCta.href = product.lynkUrl;
+    if (product.lynkUrl) {
+      btnCta.style.display = '';
+      btnCta.addEventListener('click', () => {
+        trackClick(product.id);
+        window.open(product.lynkUrl, '_blank', 'noopener');
+      });
+    } else {
+      btnCta.style.display = 'none';
+    }
 
-    btnCta.addEventListener('click', (e) => {
-      trackClick(product.id);
-    });
-
+    // Share WA button
     const btnShareWA = document.getElementById('btnShareWA');
-    const shareUrl = `${window.location.origin}/p/${product.id}`;
+    const shareUrl = `${window.location.origin}/detail.html?id=${product.id}`;
     const shareText = `${product.title}\n${shareUrl}`;
     btnShareWA.addEventListener('click', () => {
       window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener');
+      showToast('Tautan produk disalin ke WhatsApp', 'fa-brands fa-whatsapp', '#25D366');
     });
+
+    // Description
+    const descBody = document.getElementById('descBody');
+    if (product.description) {
+      descBody.innerHTML = product.description;
+    } else {
+      descBody.innerHTML = '<p>Tidak ada deskripsi untuk produk ini.</p>';
+    }
+
+    // Specs — if the product has specs data, we'll show them
+    const specsContainer = document.getElementById('descSpecs');
+    if (product.specs && product.specs.length > 0) {
+      specsContainer.innerHTML = product.specs.map(s => `
+        <div class="spec-item">
+          <p class="spec-label">${s.label}</p>
+          <p class="spec-value">${s.value}</p>
+        </div>
+      `).join('');
+      specsContainer.style.display = '';
+    } else {
+      specsContainer.style.display = 'none';
+    }
+
+    // Gallery
+    const galleryGrid = document.getElementById('galleryGrid');
+    if (product.gallery && product.gallery.length > 0) {
+      galleryGrid.innerHTML = product.gallery.map((src, i) => {
+        const isVideo = src.match(/\.(mp4|webm|ogg)$/i);
+        return isVideo
+          ? `<video src="${src}" controls data-animate></video>`
+          : `<img src="${src}" alt="Galeri ${product.title}" loading="lazy" data-animate />`;
+      }).join('');
+      document.getElementById('productGallery').style.display = '';
+    } else {
+      document.getElementById('productGallery').style.display = 'none';
+    }
+
+    // Observe all animated elements
+    observeAnimated();
 
     trackView(product.id);
 
   } catch (err) {
-    container.innerHTML = '<p class="loading-text">Produk tidak ditemukan.</p>';
+    document.getElementById('productName').textContent = 'Produk tidak ditemukan.';
+    document.getElementById('productImage').src = '/placeholder.svg';
   }
 }
 
