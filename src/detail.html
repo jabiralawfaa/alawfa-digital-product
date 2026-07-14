@@ -69,7 +69,8 @@
     </div>
   </div>
 
-  <!-- ========== TOP NAV ========== -->
+  <!-- ========== HEADER ========== -->
+  <header class="top-header">
   <nav class="top-nav" role="navigation" aria-label="Navigasi atas">
     <a href="/" class="back-link" aria-label="Kembali ke katalog">
       <i class="fa-solid fa-arrow-left"></i>
@@ -79,20 +80,22 @@
       <img src="/logo.png" alt="Al-Awfa Digital" class="nav-logo-img" />
     </a>
   </nav>
+  </header>
 
   <!-- ========== PRODUCT DETAIL ========== -->
-  <main class="product-detail" id="productDetail">
+  <main class="product-detail" id="productDetail" aria-label="Detail produk">
 
     <!-- Hero Image -->
-    <div class="product-hero">
+    <figure class="product-hero">
       <div class="product-image-wrap" id="productImageWrap" data-animate>
-        <img id="productImage" src="/placeholder.svg" alt="Product image" loading="eager" />
+        <img id="productImage" src="/placeholder.svg" alt="" loading="eager" />
         <div class="product-hero-badge" id="productBadge" data-animate>
           <i class="fa-solid fa-cube"></i>
           <span id="badgeText">Produk</span>
         </div>
       </div>
-    </div>
+      <figcaption class="sr-only" id="productFigCaption">Gambar produk</figcaption>
+    </figure>
 
     <!-- Product Info -->
     <div class="product-info">

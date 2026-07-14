@@ -105,6 +105,8 @@ async function loadDetail() {
     const img = document.getElementById('productImage');
     img.src = product.previewImage || '/placeholder.svg';
     img.alt = product.title;
+    const figCap = document.getElementById('productFigCaption');
+    if (figCap) figCap.textContent = `Gambar ${product.title}`;
 
     // Badge
     document.getElementById('badgeText').textContent = product.category || 'Produk';
